@@ -8,11 +8,16 @@ namespace XEurope.JsonClasses
 {
     class UserJson
     {
-        public bool error;
-        public int id;
-        public string name;
-        public string email;
-        public string code;
-        public string createdAt;
+        public bool error { get; set; }
+        public int id { get; set; }
+        public string name { get; set; }
+        public string email { get; set; }
+        public string code { get; set; }
+        public string createdAt { get; set; }
+        public string image_url { get; set; }
+        public string link { get; set; }
+        public string description { get; set; }
+
+
     }
 }

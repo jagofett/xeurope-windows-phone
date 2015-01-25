@@ -125,7 +125,7 @@ namespace XEurope
                 Uri myUri = new Uri(ConnHelper.BaseUri + "login");
 
                 // Create the Json
-                var loginData = new LoginJson(userMail, userPass);
+                var loginData = new LoginJson(UsernameField.Text, PasswordField.Password);
 
                 // Create the post data
                 var postData = JsonConvert.SerializeObject(loginData);
@@ -252,7 +252,7 @@ namespace XEurope
 
         private void ShowAboutPage(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(AboutPage)); 
+            (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = "1:2:3" });
         }
 
         private void ResetPassword(object sender, RoutedEventArgs e)
