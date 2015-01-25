@@ -13,42 +13,40 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
-        
+
         <CaptureElement Grid.Row="0"
             x:Name="PreviewElement" 
             Stretch="UniformToFill"
             FlowDirection="LeftToRight" />
         <Rectangle x:Name="detectorRectangle" 
             Fill="Transparent" 
-            Stroke="#009ee0" 
-            StrokeThickness="2"
+            Stroke="White" StrokeThickness="3"
+            Visibility="Collapsed"
             Margin="0,0,0,0"
             RadiusX="30" RadiusY="30"/>
-        <Grid Grid.Row="1" 
-            VerticalAlignment="Bottom" Background="White"
-              Width="Auto" Height="80" x:Name="MenuGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="90"/>
-                <ColumnDefinition Width="*" x:Name="ActionField"/>
-                <ColumnDefinition Width="90"/>
-            </Grid.ColumnDefinitions>
-            
-            <Image Name="TorchButton" Stretch="Uniform" Margin="0,10,0,10"
-                   Tapped="TorchButton_Click" Grid.Column="0"
-                   Source="../Assets/lamp-normal.png" />
-            <Button Grid.Column="1" 
-                Background="#97bf0d"
-                Content="Analyze" Height="60"
-                x:Name="BtnCapturePhoto"
-                HorizontalAlignment="Center" Click="CaptureButton_Click" />
-            <ProgressBar x:Name="AnalyzeProgressBar" Grid.Column="1" 
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"
-                         IsIndeterminate="True"
-                         Visibility="Collapsed"/>
-            <Image Name="HistoryButton" Stretch="Uniform" Margin="0,10,0,10"
-                   Tapped="CaptureButton_Click" Grid.Column="2"
-                   Source="../Assets/history-normal.png" />
-        </Grid>
+        <Border Grid.Row="1" x:Name="MenuGrid" 
+                BorderBrush="#009ee0" BorderThickness="0,5,0,0" 
+        	VerticalAlignment="Bottom" Background="White"
+        	Width="Auto" Height="80" >
+            <Grid>
+                <Image x:Name="TorchButton" Stretch="Uniform"
+        			Tapped="TorchButton_Click" Grid.Column="0"
+                       HorizontalAlignment="Left"
+        			Source="../Assets/lamp-normal.png" Margin="10,5,10,5" />
+                <Button 
+        			Background="#97bf0d"
+        			Content="Analyze" Height="60"
+        			x:Name="BtnCapturePhoto"
+        			HorizontalAlignment="Center" Click="CaptureButton_Click" Margin="145,10,146,10" />
+                <ProgressBar x:Name="AnalyzeProgressBar" Width="Auto"
+        			HorizontalAlignment="Center" VerticalAlignment="Center"
+        			IsIndeterminate="True" Visibility="Collapsed" Margin="0"/>
+                <Image x:Name="HistoryButton" Stretch="Uniform"
+        			Tapped="CaptureButton_Click"
+                    HorizontalAlignment="Right"
+        			Source="../Assets/history-normal.png" Margin="10,5,10,5" />
+
+            </Grid>
+        </Border>
     </Grid>
 </Page>

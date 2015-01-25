@@ -267,33 +267,32 @@ namespace XEurope.View
              //var responseData = (ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(ErrorJson));
 
                 var title = responseData.error
-                    ? "Error"
+                    ? "Failed"
                     : "Success";
                 var message = string.IsNullOrEmpty(responseData.message)
                     ? "Marker is not recognized"
                     : responseData.message;
                 var dialog = new MessageDialog(message, title);
                 
+                AnalyzeProgressBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                BtnCapturePhoto.IsEnabled = true;
 
-                    AnalyzeProgressBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                    BtnCapturePhoto.IsEnabled = true;
-
-                    if (!responseData.error)
-                    {
-                        setMarkerDetected(true);
-                        MarkerString = responseData.message;
-                    }
-                    else
-                    {
-                        dialog.ShowAsync();
-                    }
-                    if (isMarkerDetected)
-                    {
-                        dialog.ShowAsync();
-                        //await mediaCapture.StopPreviewAsync();
-                        (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = MarkerString });
-                        // NavigationService.Navigate(new Uri(string.Format("/DetailPage.xaml?val={0}", dtouchMarker.getCodeKey()), UriKind.Relative));
-                    }
+                if (!responseData.error)
+                {
+                    setMarkerDetected(true);
+                    MarkerString = responseData.message;
+                }
+                else
+                {
+                    dialog.ShowAsync();
+                }
+                if (isMarkerDetected)
+                {
+                    dialog.ShowAsync();
+                    //await mediaCapture.StopPreviewAsync();
+                    (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = MarkerString });
+                    // NavigationService.Navigate(new Uri(string.Format("/DetailPage.xaml?val={0}", dtouchMarker.getCodeKey()), UriKind.Relative));
+                }
             }
             catch (Exception ex)
             {
@@ -413,7 +412,7 @@ namespace XEurope.View
                 var responseData = (ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(ErrorJson));
 
                 var title = responseData.error
-                    ? "Error"
+                    ? "Failed"
                     : "Success";
                 var message = string.IsNullOrEmpty(responseData.message)
                     ? "Marker is not recognized"
