@@ -24,6 +24,7 @@ namespace XEurope.Common
 
         public static string AddHttpToUrl(string inUrl)
         {
+            inUrl = inUrl ?? String.Empty;
             if (!(inUrl.StartsWith("http://") || inUrl.StartsWith("https://")))
             {
                 return "http://" + inUrl;
