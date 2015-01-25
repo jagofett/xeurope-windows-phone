@@ -122,126 +122,52 @@ namespace XEurope
             }
             else
             {
-                Uri myUri = new Uri(ConnHelper.BaseUri + "login");
-
-                // Create the Json
-                var loginData = new LoginJson(UsernameField.Text, PasswordField.Password);
-
-                // Create the post data
-                var postData = JsonConvert.SerializeObject(loginData);
-                var response = await ConnHelper.PostToUri(myUri, postData);
-                try
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
+                    // Create the Json
+                    var loginData = new LoginJson(UsernameField.Text, PasswordField.Password);
 
-                    var responseData = (LoginOkJson)JsonConvert.DeserializeObject(response, typeof(LoginOkJson));
+                    // Create the post data
+                    var postData = JsonConvert.SerializeObject(loginData);
 
-                    var title = responseData.error
-                        ? "Error"
-                        : "Success";
-                    var dialog = new MessageDialog(responseData.message, title);
+                    Uri myUri = new Uri(ConnHelper.BaseUri + "login");
+                    var response = await ConnHelper.PostToUri(myUri, postData);
 
-                    if (!responseData.error)
+                    try
                     {
-                        (this.Parent as Frame).Navigate(typeof (View.CameraPage));
-                    }
-                    else
-                    {
-                        dialog.ShowAsync();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var dialog = new MessageDialog(ex.Message, "Error");
-                    dialog.ShowAsync();
-                }
-                /*
+                        var responseData = (LoginOkJson)JsonConvert.DeserializeObject(response, typeof(LoginOkJson));
 
-                HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(myUri);
-                
-                myRequest.ContentType = "application/json";
-                // Needed: Vote, voteCountByCode, Users
-                //myRequest.Headers["Authorization"] = "a065bde13113778966eacdeff21a5ead";
-                myRequest.Method = "POST";
-                myRequest.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), myRequest);
-                  * */
-            }
-        }
-        /*
-        void GetRequestStreamCallback(IAsyncResult callbackResult)
-        {
-            HttpWebRequest myRequest = (HttpWebRequest)callbackResult.AsyncState;
+                        var title = responseData.error
+                            ? "Error"
+                            : "Success";
+                        var dialog = new MessageDialog(responseData.message, title);
 
-            // End the stream request operation
-            Stream postStream = myRequest.EndGetRequestStream(callbackResult);
-
-            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                // Create the Json
-                var loginData = new LoginJson(UsernameField.Text, PasswordField.Password);
-
-                // Create the post data
-                var postData = JsonConvert.SerializeObject(loginData);
-                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-
-                // Add the post data to the web request
-                postStream.Write(byteArray, 0, byteArray.Length);
-                postStream.Flush();
-                postStream.Dispose();
-
-                // Start the web request
-                myRequest.BeginGetResponse(new AsyncCallback(GetResponsetStreamCallback), myRequest);
-            });
-        }
-
-        void GetResponsetStreamCallback(IAsyncResult callbackResult)
-        {
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)callbackResult.AsyncState;
-                HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(callbackResult);
-
-                var stream = new StreamReader(response.GetResponseStream());
-                var responseString = stream.ReadToEnd();
-
-                JsonClasses.ErrorJson responseData = (JsonClasses.ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(JsonClasses.ErrorJson));
-
-                var title = responseData.error
-                    ? "Error"
-                    : "Success";
-                var dialog = new MessageDialog(responseData.message, title);
-                
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    if (!responseData.error)
-                    {
-                        // Check if it's the first launch
-                        if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch"))
+                        if (!responseData.error)
                         {
-                            ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
-
-                            (this.Parent as Frame).Navigate(typeof(View.TutorialPage));
+                            // Check if it's the first launch
+                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch"))
+                            {
+                                ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
+                                (this.Parent as Frame).Navigate(typeof(View.TutorialPage));
+                            }
+                            else
+                            {
+                                (this.Parent as Frame).Navigate(typeof(CameraPage));
+                            }
                         }
                         else
                         {
-                            (this.Parent as Frame).Navigate(typeof(MainPage));
+                            dialog.ShowAsync();
                         }
                     }
-                    else
+                    catch (Exception ex)
                     {
+                        var dialog = new MessageDialog(ex.Message, "Error");
                         dialog.ShowAsync();
-                    }     
-                });
-            }
-            catch (Exception e)
-            {
-                var dialog = new MessageDialog(e.Message, "Error");
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    dialog.ShowAsync();
+                    }
                 });
             }
         }
-         * */
         #endregion
 
         #region Link eventhandlers
@@ -252,7 +178,7 @@ namespace XEurope
 
         private void ShowAboutPage(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = "1:2:3" });
+            (this.Parent as Frame).Navigate(typeof(AboutPage)); 
         }
 
         private void ResetPassword(object sender, RoutedEventArgs e)

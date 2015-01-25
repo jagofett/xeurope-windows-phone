@@ -41,19 +41,20 @@
                      Margin="0,0,0,26.5"/>
                 <TextBox TextWrapping="Wrap" VerticalAlignment="Stretch"
                      BorderBrush="#3f3f3e" Margin="30,0,30,10" 
-                     PlaceholderText="Username" TextChanged="UsernameChangedEvent"/>
+                     PlaceholderText="Username" 
+                         x:Name="UsernameField"/>
                 <TextBox TextWrapping="Wrap" VerticalAlignment="Stretch"
                      BorderBrush="#3f3f3e" Margin="30,0,30,10" 
                      PlaceholderText="Email address"
-                     TextChanged="UserMailChangedEvent"/>
+                     x:Name="EmailField"/>
                 <PasswordBox VerticalAlignment="Stretch"
                      BorderBrush="#3f3f3e" Margin="30,0,30,10" 
                      PlaceholderText="Password"
-                     PasswordChanged="UserPassChangedEvent"/>
+                     x:Name="Password1Field"/>
                 <PasswordBox VerticalAlignment="Stretch"
                      BorderBrush="#3f3f3e" Margin="30,0,30,10" 
                      PlaceholderText="Retype password"
-                     PasswordChanged="UserPass2ChangedEvent"/>
+                     x:Name="Password2Field"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

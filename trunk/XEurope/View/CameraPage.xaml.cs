@@ -253,19 +253,13 @@ namespace XEurope.View
             BtnCapturePhoto.IsEnabled = false;
             AnalyzeProgressBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
 
-            StorageFile photoStorageFile = await ApplicationData.Current.LocalFolder.CreateFileAsync("TestPhoto.jpg", CreationCollisionOption.ReplaceExisting);
-            await mediaCapture.CapturePhotoToStorageFileAsync(ImageEncodingProperties.CreateJpeg(), photoStorageFile).AsTask();
+            var stream = new InMemoryRandomAccessStream();
 
-            var stream = await photoStorageFile.OpenReadAsync();
+            await mediaCapture.CapturePhotoToStreamAsync(ImageEncodingProperties.CreateJpeg(), stream);
 
-            //photoStorageFile = await ApplicationData.Current.LocalFolder.CreateFileAsync("TestPhoto.jpg", CreationCollisionOption.ReplaceExisting);
-
-            var s = photoStorageFile.OpenStreamForReadAsync().Result;
-            var responseData = await SendStreamToProcess(s);
+            var responseData = await SendStreamToProcess(stream.CloneStream().AsStream());
             try
             {
-             //var responseData = (ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(ErrorJson));
-
                 var title = responseData.error
                     ? "Failed"
                     : "Success";
@@ -288,10 +282,8 @@ namespace XEurope.View
                 }
                 if (isMarkerDetected)
                 {
-                    dialog.ShowAsync();
-                    //await mediaCapture.StopPreviewAsync();
+                    //dialog.ShowAsync();
                     (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = MarkerString });
-                    // NavigationService.Navigate(new Uri(string.Format("/DetailPage.xaml?val={0}", dtouchMarker.getCodeKey()), UriKind.Relative));
                 }
             }
             catch (Exception ex)
@@ -328,6 +320,7 @@ namespace XEurope.View
             sendingBytes = Converters.ConvertStreamToBytes(mediaStream);
             var base64 = Convert.ToBase64String(sendingBytes);
             base64 = base64 ?? "";
+
 #if (EMULATOR)
 {  
     //get sample image byte[] from string.
@@ -358,96 +351,7 @@ namespace XEurope.View
                 responseData.message = "The code don't belong to anyone!";
             }
             return responseData;
-            /*
-            var myRequest = (HttpWebRequest) WebRequest.Create(myUri);
-
-            myRequest.ContentType = "application/json";
-            // Needed: Vote, voteCountByCode, Users
-            //myRequest.Headers["Authorization"] = "a065bde13113778966eacdeff21a5ead";
-            myRequest.Method = "POST";
-            try
-            {
-                myRequest.BeginGetRequestStream(GetRequestStreamCallback, myRequest);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
-            }
-             * */
         }
-        /*
-        private void GetRequestStreamCallback(IAsyncResult callbackResult)
-        {
-            var myRequest = (HttpWebRequest) callbackResult.AsyncState;
-
-            // End the stream request operation
-            var postStream = myRequest.EndGetRequestStream(callbackResult);
-
-            // Create the Json
-            var imageData = new JsonImage {ImageBytes = sendingBytes};
-
-            // Create the post data
-            var postData = JsonConvert.SerializeObject(imageData);
-            var byteArray = Encoding.UTF8.GetBytes(postData);
-
-            // Add the post data to the web request
-            postStream.Write(byteArray, 0, byteArray.Length);
-            postStream.Flush();
-            postStream.Dispose();
-
-            // Start the web request
-            myRequest.BeginGetResponse(GetResponsetStreamCallback, myRequest);
-        }
-
-        private void GetResponsetStreamCallback(IAsyncResult callbackResult)
-        {
-            try
-            {
-                var request = (HttpWebRequest)callbackResult.AsyncState;
-                var response = (HttpWebResponse)request.EndGetResponse(callbackResult);
-
-                var stream = new StreamReader(response.GetResponseStream());
-                var responseString = stream.ReadToEnd();
-
-                var responseData = (ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(ErrorJson));
-
-                var title = responseData.error
-                    ? "Failed"
-                    : "Success";
-                var message = string.IsNullOrEmpty(responseData.message)
-                    ? "Marker is not recognized"
-                    : responseData.message;
-                var dialog = new MessageDialog(message, title);
-                
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    AnalyzeProgressBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                    BtnCapturePhoto.IsEnabled = true;
-
-                    if (!responseData.error)
-                    {
-                        setMarkerDetected(true);
-                        MarkerString = responseData.message;
-                    }
-                    else
-                    {
-                        dialog.ShowAsync();
-                    }
-
-                    if (isMarkerDetected)
-                    {
-                        //await mediaCapture.StopPreviewAsync();
-                        (this.Parent as Frame).Navigate(typeof(DetailPage), MarkerString);
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                var dialog = new MessageDialog(e.Message, "Error");
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => dialog.ShowAsync());
-            }
-        }
-        */
 
         #region OpenCv dependent functions from android implementation
         private void setMarkerDetected(bool detected)

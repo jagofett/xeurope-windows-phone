@@ -20,11 +20,6 @@ namespace XEurope
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        private string userName;
-        private string userMail;
-        private string userPass;
-        private string userPass2;
-
         public RegisterPage()
         {
             this.InitializeComponent();
@@ -108,16 +103,16 @@ namespace XEurope
         private async void RegisterUser(object sender, RoutedEventArgs e)
         {
             string errors = "";
-            if (String.IsNullOrEmpty(userName))
+            if (String.IsNullOrEmpty(UsernameField.Text))
                 errors += "Please fill the Username!\n";
-            if (String.IsNullOrEmpty(userMail))
+            if (String.IsNullOrEmpty(EmailField.Text))
                 errors += "Please fill the Email address!\n";
-            else if (!IsValidEmail(userMail))
+            else if (!IsValidEmail(EmailField.Text))
                 errors += "Please give valid email address!\n";
 
-            if (String.IsNullOrEmpty(userPass))
+            if (String.IsNullOrEmpty(Password1Field.Password))
                 errors += "Please fill the Password!\n";
-            if (userPass != userPass2)
+            if (Password1Field.Password != Password2Field.Password)
                 errors += "Passwords don't match!";
 
             if (errors != "")
@@ -129,121 +124,35 @@ namespace XEurope
             {
                 var myUri = new Uri(ConnHelper.BaseUri + "register");
 
-                // Create the Json
-                var registerData = new RegisterJson(userMail, userPass, userName);
-
-                // Create the post data
-                var postData = JsonConvert.SerializeObject(registerData);
-
-                var resp = await ConnHelper.PostToUri(myUri, postData);
-
-                try
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
+                    // Create the Json
+                    var registerData = new RegisterJson(EmailField.Text, Password1Field.Password, UsernameField.Text);
 
+                    // Create the post data
+                    var postData = JsonConvert.SerializeObject(registerData);
 
-                    var responseData = (ErrorJson) JsonConvert.DeserializeObject(resp, typeof (ErrorJson));
+                    var resp = await ConnHelper.PostToUri(myUri, postData);
 
-                    var title = responseData.error
-                        ? "Error"
-                        : "Success";
-                    var dialog = new MessageDialog(responseData.message, title);
+                    try
+                    {
+                        var responseData = (ErrorJson)JsonConvert.DeserializeObject(resp, typeof(ErrorJson));
+                        var title = responseData.error
+                            ? "Error"
+                            : "Success";
+                        var dialog = new MessageDialog(responseData.message, title);
 
-                    dialog.ShowAsync();
-
-
-                }
-                catch (Exception ex)
-                {
-                    var dialog = new MessageDialog(ex.Message, "Error");
-
-                    dialog.ShowAsync();
-                }
-                /*
-                HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(myUri);
-                myRequest.ContentType = "application/json";
-                // Needed: Vote, voteCountByCode, Users
-                //myRequest.Headers["Authorization"] = "a065bde13113778966eacdeff21a5ead";
-                myRequest.Method = "POST";
-                myRequest.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), myRequest);
-                 */
-            }
-        }
-        /*
-        void GetRequestStreamCallback(IAsyncResult callbackResult)
-        {
-            HttpWebRequest myRequest = (HttpWebRequest)callbackResult.AsyncState;
-
-            // End the stream request operation
-            Stream postStream = myRequest.EndGetRequestStream(callbackResult);
-
-            // Create the Json
-            var registerData = new RegisterJson(userMail, userPass, userName);
-            
-            // Create the post data
-            var postData = JsonConvert.SerializeObject(registerData);
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-
-            // Add the post data to the web request
-            postStream.Write(byteArray, 0, byteArray.Length);
-            postStream.Flush();
-            postStream.Dispose();
-
-            // Start the web request
-            myRequest.BeginGetResponse(new AsyncCallback(GetResponsetStreamCallback), myRequest);
-        }
-
-        void GetResponsetStreamCallback(IAsyncResult callbackResult)
-        {
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)callbackResult.AsyncState;
-                HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(callbackResult);
-                
-                var stream = new StreamReader(response.GetResponseStream());
-                var responseString = stream.ReadToEnd();
-
-                JsonClasses.ErrorJson responseData = (JsonClasses.ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(JsonClasses.ErrorJson));
-
-                var title = responseData.error 
-                    ? "Error" 
-                    : "Success";
-                var dialog = new MessageDialog(responseData.message, title);
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
-                    dialog.ShowAsync();
+                        dialog.ShowAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        var dialog = new MessageDialog(ex.Message, "Error");
+                        dialog.ShowAsync();
+                    }
                 });
-                
-            }
-            catch (Exception e)
-            {
-                var dialog = new MessageDialog(e.Message, "Error");
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
-                   dialog.ShowAsync();
-               });
             }
         }
-         */
-        #endregion
 
-        #region EventHandlers
-        private void UsernameChangedEvent(object sender, TextChangedEventArgs e)
-        {
-            userName = (string)(sender as TextBox).Text;
-        }
-
-        private void UserPassChangedEvent(object sender, RoutedEventArgs e)
-        {
-            userPass = (string)(sender as PasswordBox).Password;
-        }
-
-        private void UserPass2ChangedEvent(object sender, RoutedEventArgs e)
-        {
-            userPass2 = (string)(sender as PasswordBox).Password;
-        }
-
-        private void UserMailChangedEvent(object sender, TextChangedEventArgs e)
-        {
-            userMail = (string)(sender as TextBox).Text;
-        }
         #endregion
 
         private void CancelRegister(object sender, RoutedEventArgs e)
