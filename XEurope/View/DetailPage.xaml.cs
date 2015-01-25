@@ -127,6 +127,12 @@ namespace XEurope.View
                 var bmi = new BitmapImage { CreateOptions = BitmapCreateOptions.IgnoreImageCache, UriSource = myUri };
                 LogoImage.Source = bmi;
             } 
+            else
+            {
+                //BitmapImage tn = new BitmapImage();
+                //tn.SetSource(Application.GetResourceStream(new Uri(@"../Assets/no-image.png", UriKind.Relative)).Stream);
+                LogoImage.Source = new BitmapImage(new Uri(@"ms-appx:///../Assets/no_image.png"));
+            }
             //name
             ProjectNameText.Text = _userJson.name ?? "Anonymus Project";
 
