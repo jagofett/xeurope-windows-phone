@@ -26,11 +26,11 @@ namespace XEurope.View
         {
             this.InitializeComponent();
 
-            TutorialText.Text = "1. Look for an X-Europe roject poster in your local university\n\n" +
-            "2. Press on start button\n\n" +
-            "3. Point your device over a logo\n\n" +
-            "4. Press Analyze to start scanning\n\n" +
-            "5. Read about the projects\n\n" +
+            TutorialText.Text = "1. Look for an X-Europe roject poster in your local university\n" +
+            "2. Press on start button\n" +
+            "3. Point your device over a logo\n" +
+            "4. Press Analyze to start scanning\n" +
+            "5. Read about the projects\n" +
             "6. Vote on what you like\n\n" +
             "Note: The application needs internet access for scanning";
         }
@@ -46,7 +46,7 @@ namespace XEurope.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(MainPage));
+            (this.Parent as Frame).Navigate(typeof(CameraPage));
         }
     }
 }
