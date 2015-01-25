@@ -433,11 +433,11 @@ namespace XEurope.View
                     {
                         dialog.ShowAsync();
                     }
+
                     if (isMarkerDetected)
                     {
                         //await mediaCapture.StopPreviewAsync();
-                        (this.Parent as Frame).Navigate(typeof(DetailPage), "");
-                        // NavigationService.Navigate(new Uri(string.Format("/DetailPage.xaml?val={0}", dtouchMarker.getCodeKey()), UriKind.Relative));
+                        (this.Parent as Frame).Navigate(typeof(DetailPage), MarkerString);
                     }
                 });
             }
