@@ -117,7 +117,7 @@ namespace XEurope.View
                 return;
             }
             //description
-            DetailText.Text = _userJson.description;
+            DetailText.Text = _userJson.description ?? "No description!";
 
             //logo
             var link = ConnHelper.AddHttpToUrl(_userJson.image_url);
@@ -128,7 +128,7 @@ namespace XEurope.View
                 LogoImage.Source = bmi;
             } 
             //name
-            ProjectNameText.Text = _userJson.name;
+            ProjectNameText.Text = _userJson.name ?? "Anonymus Project";
 
         }
 
