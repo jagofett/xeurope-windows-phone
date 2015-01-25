@@ -11,7 +11,9 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Newtonsoft.Json;
 using XEurope.Common;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -27,14 +29,13 @@ namespace XEurope.View
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private CodeJson UserDTouchCode;
+        private UserJson _userJson;
 
         public DetailPage()
         {
             this.InitializeComponent();
 
-            DetailText.Text = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porttitor sed libero nec feugiat. Pellentesque viverra quam leo, eget laoreet dui dictum accumsan. Vestibulum quis nunc arcu. Duis id rutrum turpis. Donec vulputate egestas massa, sit amet luctus augue posuere ac. Mauris eros ex, tincidunt eget dapibus ac, accumsan sit amet magna. Donec eleifend nec ex at consequat. Mauris rhoncus ligula ut neque semper, eget malesuada sem ultrices. Suspendisse rhoncus convallis lectus. Donec a maximus dolor, id imperdiet quam. Quisque elementum odio placerat turpis venenatis, sit amet finibus massa viverra. Cras et ullamcorper ex. Nulla facilisi. Pellentesque venenatis interdum arcu vel elementum. Phasellus sodales justo hendrerit, mollis libero in, rutrum neque. " +
-
-            "Duis hendrerit consectetur porttitor. Proin vel massa rhoncus, suscipit nibh nec, tincidunt quam. Vivamus iaculis, mauris id egestas aliquet, magna libero vestibulum est, vitae finibus leo odio ac lorem. Sed lacinia, quam ut imperdiet porta, mi turpis accumsan arcu, vitae volutpat libero ex id turpis. Morbi vel ligula ac odio vestibulum tincidunt vitae non nunc. Aliquam vestibulum porta felis, a tincidunt odio auctor eget. In hac habitasse platea dictumst. Cras rhoncus orci ante, non volutpat quam ultricies vel. Nunc viverra congue scelerisque. Nulla facilisi. Proin condimentum ullamcorper nunc quis lacinia. Aenean condimentum velit id iaculis bibendum. Cras non libero dictum, pellentesque odio blandit, laoreet tortor. Curabitur luctus eros lectus, eu molestie purus fringilla eget. Integer odio velit, interdum a risus at, aliquam mattis dui. ";
+            DetailText.Text = "Loading...";
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
@@ -99,10 +100,36 @@ namespace XEurope.View
         /// </summary>
         /// <param name="e">Provides data for navigation methods and event
         /// handlers that cannot cancel the navigation request.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            UserDTouchCode = e.Parameter as CodeJson;
             this.navigationHelper.OnNavigatedTo(e);
+
+            UserDTouchCode = e.Parameter as CodeJson;
+            if (UserDTouchCode == null)
+            {
+                return;
+            }
+            var uri = new Uri(ConnHelper.BaseUri + "users/" + UserDTouchCode.code);
+            var resp = await ConnHelper.GetFromUri(uri);
+            _userJson = (UserJson)JsonConvert.DeserializeObject(resp, typeof(UserJson));
+            if (_userJson.error)
+            {
+                return;
+            }
+            //description
+            DetailText.Text = _userJson.description;
+
+            //logo
+            var link = ConnHelper.AddHttpToUrl(_userJson.image_url);
+            if (Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute))
+            {
+                var myUri = new Uri(link, UriKind.RelativeOrAbsolute);
+                var bmi = new BitmapImage { CreateOptions = BitmapCreateOptions.IgnoreImageCache, UriSource = myUri };
+                LogoImage.Source = bmi;
+            } 
+            //name
+            ProjectNameText.Text = _userJson.name;
+
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -123,9 +150,22 @@ namespace XEurope.View
 
         }
 
-        private void ReadMoreClick(object sender, RoutedEventArgs e)
+        private async void ReadMoreClick(object sender, RoutedEventArgs e)
         {
+            var link = ConnHelper.AddHttpToUrl(_userJson.link);
+            var url = Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute) ? link : "http://xeurope.eitictlabs.hu/";
 
+            var defUri = new Uri("http://xeurope.eitictlabs.hu/");
+            var uri = new Uri(url);
+            
+            var options = new Windows.System.LauncherOptions {TreatAsUntrusted = true, FallbackUri = defUri};
+
+            // Launch the URI with a warning prompt
+            var success = await Windows.System.Launcher.LaunchUriAsync(uri, options);
+            if (!success)
+            {
+                //todo can not open the link(?)
+            }
         }
         #endregion
     }
