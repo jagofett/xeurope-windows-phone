@@ -1,0 +1,31 @@
+﻿<Page
+    x:Class="XEurope.View.TutorialPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:XEurope.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Background="White">
+        <ScrollViewer>
+            <StackPanel ScrollViewer.VerticalScrollMode="Enabled"
+               ScrollViewer.VerticalScrollBarVisibility="Visible"
+                        HorizontalAlignment="Left" Margin="0,0,0,0" 
+                        VerticalAlignment="Top">
+                <Image Source="../Assets/howto-top.png"
+                   Margin="0,0,0,20"/>
+                <TextBlock Name="TutorialText"
+                    TextWrapping="Wrap" FontSize="16"
+                    VerticalAlignment="Stretch"
+                    Foreground="#3f3f3e" 
+                    Margin="30,0,30,30" />
+                <Button Content="Start" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    Height="80" Margin="28,0"
+                    FontSize="34"
+                    Background="#97bf0d" Click="Button_Click"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
