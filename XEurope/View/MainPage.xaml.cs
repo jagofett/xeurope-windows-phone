@@ -126,6 +126,39 @@ namespace XEurope
             else
             {
                 Uri myUri = new Uri(ConnHelper.BaseUri + "login");
+
+                // Create the Json
+                var loginData = new LoginJson(userMail, userPass);
+
+                // Create the post data
+                var postData = JsonConvert.SerializeObject(loginData);
+                var response = await ConnHelper.PostToUri(myUri, postData);
+                try
+                {
+
+                    var responseData = (LoginOkJson)JsonConvert.DeserializeObject(response, typeof(LoginOkJson));
+
+                    var title = responseData.error
+                        ? "Error"
+                        : "Success";
+                    var dialog = new MessageDialog(responseData.message, title);
+
+                    if (!responseData.error)
+                    {
+                        (this.Parent as Frame).Navigate(typeof (View.CameraPage));
+                    }
+                    else
+                    {
+                        dialog.ShowAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var dialog = new MessageDialog(ex.Message, "Error");
+                    dialog.ShowAsync();
+                }
+                /*
+
                 HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(myUri);
                 
                 myRequest.ContentType = "application/json";
@@ -133,9 +166,10 @@ namespace XEurope
                 //myRequest.Headers["Authorization"] = "a065bde13113778966eacdeff21a5ead";
                 myRequest.Method = "POST";
                 myRequest.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), myRequest);
+                  * */
             }
         }
-
+        /*
         void GetRequestStreamCallback(IAsyncResult callbackResult)
         {
             HttpWebRequest myRequest = (HttpWebRequest)callbackResult.AsyncState;
@@ -193,6 +227,7 @@ namespace XEurope
                 });
             }
         }
+         * */
         #endregion
 
         #region EventHandlers

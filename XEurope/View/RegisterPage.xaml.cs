@@ -122,21 +122,53 @@ namespace XEurope
 
             if (errors != "")
             {
-                MessageDialog errorDialog = new MessageDialog(errors, "Error");
+                var errorDialog = new MessageDialog(errors, "Error");
                 await errorDialog.ShowAsync();
             }
             else
             {
-                Uri myUri = new Uri(ConnHelper.BaseUri + "register");
+                var myUri = new Uri(ConnHelper.BaseUri + "register");
+
+                // Create the Json
+                var registerData = new RegisterJson(userMail, userPass, userName);
+
+                // Create the post data
+                var postData = JsonConvert.SerializeObject(registerData);
+
+                var resp = await ConnHelper.PostToUri(myUri, postData);
+
+                try
+                {
+
+
+                    var responseData = (ErrorJson) JsonConvert.DeserializeObject(resp, typeof (ErrorJson));
+
+                    var title = responseData.error
+                        ? "Error"
+                        : "Success";
+                    var dialog = new MessageDialog(responseData.message, title);
+
+                    dialog.ShowAsync();
+
+
+                }
+                catch (Exception ex)
+                {
+                    var dialog = new MessageDialog(ex.Message, "Error");
+
+                    dialog.ShowAsync();
+                }
+                /*
                 HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(myUri);
                 myRequest.ContentType = "application/json";
                 // Needed: Vote, voteCountByCode, Users
                 //myRequest.Headers["Authorization"] = "a065bde13113778966eacdeff21a5ead";
                 myRequest.Method = "POST";
                 myRequest.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), myRequest);
+                 */
             }
         }
-        
+        /*
         void GetRequestStreamCallback(IAsyncResult callbackResult)
         {
             HttpWebRequest myRequest = (HttpWebRequest)callbackResult.AsyncState;
@@ -189,6 +221,7 @@ namespace XEurope
                });
             }
         }
+         */
         #endregion
 
         #region EventHandlers

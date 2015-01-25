@@ -375,7 +375,7 @@ namespace XEurope.View
             }
              * */
         }
-
+        /*
         private void GetRequestStreamCallback(IAsyncResult callbackResult)
         {
             var myRequest = (HttpWebRequest) callbackResult.AsyncState;
@@ -447,6 +447,7 @@ namespace XEurope.View
                 CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => dialog.ShowAsync());
             }
         }
+        */
 
         #region OpenCv dependent functions from android implementation
         private void setMarkerDetected(bool detected)
