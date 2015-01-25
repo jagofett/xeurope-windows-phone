@@ -1,0 +1,63 @@
+﻿<Page
+    x:Class="XEurope.View.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:XEurope.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid x:Name="LayoutRoot" Background="White">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer>
+            <StackPanel ScrollViewer.VerticalScrollMode="Enabled"
+               ScrollViewer.VerticalScrollBarVisibility="Visible">
+                <!-- Title Panel -->
+                <StackPanel Grid.Row="0" Margin="19,0,19,0">
+                    <TextBlock Text="About"
+                       Foreground="#3f3f3e" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+                    <Grid Height="Auto" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="X-EUROPE PROJECT" 
+            		Foreground="#009ee0"
+                    VerticalAlignment="Center"
+                    Height="Auto" Margin="0,10,0,0"
+                    TextWrapping="Wrap"
+            		FontSize="32" FontWeight="Bold" 
+            		CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+                        <Image Grid.Column="1" Source="../Assets/eit-logo-1080.png"
+                       Height="140"/>
+                    </Grid>
+                    <Rectangle Fill="#009ee0"
+                       Height="3"
+                Margin="0,0,0,26.5"/>
+                </StackPanel>
+
+                <!--TODO: Content should be placed within the following grid-->
+                <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
+                    <TextBlock 
+                Foreground="#3f3f3e"
+                TextWrapping="Wrap"
+                TextAlignment="Justify" FontSize="16"
+                Text="EIT ICT Labs' X-Europe Outreach Programme is aiming at disseminating and promoting the EIT ICT Labs activities in European countries, which are not yet directly involved in EIT ICT Labs eco-system. Three areas - Student Opportunities, Start-up Activation, and Scouting, Mobility and Events - focus on involving European talents in activities carried out by the EIT ICT Labs network"
+                />
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

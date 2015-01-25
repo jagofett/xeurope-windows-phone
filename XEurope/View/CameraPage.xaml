@@ -1,0 +1,54 @@
+﻿<Page
+    x:Class="XEurope.View.CameraPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:XEurope.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="White">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="80"/>
+        </Grid.RowDefinitions>
+        
+        <CaptureElement Grid.Row="0"
+            x:Name="PreviewElement" 
+            Stretch="UniformToFill"
+            FlowDirection="LeftToRight" />
+        <Rectangle x:Name="detectorRectangle" 
+            Fill="Transparent" 
+            Stroke="#009ee0" 
+            StrokeThickness="2"
+            Margin="0,0,0,0"
+            RadiusX="30" RadiusY="30"/>
+        <Grid Grid.Row="1" 
+            VerticalAlignment="Bottom" Background="White"
+              Width="Auto" Height="80" x:Name="MenuGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="90"/>
+                <ColumnDefinition Width="*" x:Name="ActionField"/>
+                <ColumnDefinition Width="90"/>
+            </Grid.ColumnDefinitions>
+            
+            <Image Name="TorchButton" Stretch="Uniform" Margin="0,10,0,10"
+                   Tapped="TorchButton_Click" Grid.Column="0"
+                   Source="../Assets/lamp-normal.png" />
+            <Button Grid.Column="1" 
+                Background="#97bf0d"
+                Content="Analyze" Height="60"
+                x:Name="BtnCapturePhoto"
+                HorizontalAlignment="Center" Click="CaptureButton_Click" />
+            <ProgressBar x:Name="AnalyzeProgressBar" Grid.Column="1" 
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         IsIndeterminate="True"
+                         Visibility="Collapsed"/>
+            <Image Name="HistoryButton" Stretch="Uniform" Margin="0,10,0,10"
+                   Tapped="CaptureButton_Click" Grid.Column="2"
+                   Source="../Assets/history-normal.png" />
+        </Grid>
+    </Grid>
+</Page>

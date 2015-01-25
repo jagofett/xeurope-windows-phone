@@ -1,0 +1,56 @@
+﻿<Page
+    x:Class="XEurope.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:XEurope"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Background="White">
+        <ScrollViewer>
+            <StackPanel ScrollViewer.VerticalScrollMode="Enabled"               
+                        ScrollViewer.VerticalScrollBarVisibility="Visible"
+                HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top">
+                <Image Source="../Assets/login-top.png" 
+                       Margin="0,0,0,20"/>
+                <TextBox TextWrapping="Wrap" VerticalAlignment="Stretch"
+                     BorderBrush="#3f3f3e"
+                     PlaceholderText="Email address"
+                     Margin="30,0,30,10"
+                         TextChanged="UserMailChangedEvent"/>
+                <PasswordBox VerticalAlignment="Stretch"
+                     BorderBrush="#3f3f3e" Margin="30,0,30,10" 
+                     PlaceholderText="Password"
+                     PasswordChanged="UserPassChangedEvent" />
+                <Button Content="Login" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    Height="80" Margin="30,0"
+                    FontSize="34" BorderThickness="0"
+                    Background="#97bf0d" Click="Login"/>
+                <Button Content="Learn about the project"
+                    HorizontalAlignment="Stretch"
+                    FontSize="22" FontWeight="Normal"
+                    Foreground="#009ee0"
+                    Margin="30,20,30,0" Click="ShowAboutPage" />
+                <Rectangle 
+                    Height="2" Margin="30,0,30,0"
+                    Fill="#009ee0"/>
+                <Button Content="Create account"
+                    HorizontalAlignment="Stretch"
+                    FontSize="22" FontWeight="Normal"
+                    Foreground="#009ee0"
+                    Margin="30,0,30,0" 
+                    Click="ShowRegistrationPage"/>
+                <Rectangle
+                    Height="2" Margin="30,0,30,0"
+                    Fill="#009ee0"/>
+                <Button Content="Reset password"
+                    HorizontalAlignment="Stretch"
+                    FontSize="22" FontWeight="Normal"
+                    Foreground="#009ee0"
+                    Margin="30,0,30,0" Click="ResetPassword" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
