@@ -26,7 +26,7 @@
                 <TextBlock Name="DetailText" Margin="19,15,19,30"
                        TextWrapping="Wrap"
                        Foreground="#3f3f3e"
-                       Height="Auto"
+                       Height="Auto" FontSize="16"
                        TextAlignment="Justify"/>
                 <Button Content="VOTE" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                     Height="70" Margin="19,0"
