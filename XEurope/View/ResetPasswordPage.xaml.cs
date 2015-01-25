@@ -1,16 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -21,29 +16,48 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using XEurope.Common;
 using XEurope.JsonClasses;
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
-using XEurope.View;
+using Newtonsoft.Json;
+using System.Text;
+using System.Text.RegularExpressions;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
-namespace XEurope
+// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
+
+namespace XEurope.View
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class ResetPasswordPage : Page
     {
-        NavigationHelper navigationHelper;
+        private NavigationHelper navigationHelper;
+        private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        public MainPage()
+        private string userName;
+        private string userMail;
+        private string userPass;
+        private string userPass2;
+
+        public ResetPasswordPage()
         {
             this.InitializeComponent();
-
-            this.NavigationCacheMode = NavigationCacheMode.Required;
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
         }
 
+        /// <summary>
+        /// Gets the view model for this <see cref="Page"/>.
+        /// This can be changed to a strongly typed view model.
+        /// </summary>
+        public ObservableDictionary DefaultViewModel
+        {
+            get { return this.defaultViewModel; }
+        }
+
+        #region NavigationHelper
         /// <summary>
         /// Gets the <see cref="NavigationHelper"/> associated with this <see cref="Page"/>.
         /// </summary>
@@ -79,8 +93,6 @@ namespace XEurope
         {
         }
 
-        #region NavigationHelper registration
-
         /// <summary>
         /// The methods provided in this section are simply used to allow
         /// NavigationHelper to respond to the page's navigation methods.
@@ -106,14 +118,15 @@ namespace XEurope
 
         #endregion
 
-        #region Login
-        private async void Login(object sender, RoutedEventArgs e)
+        #region Register
+        private async void ResetPassword(object sender, RoutedEventArgs e)
         {
+
             string errors = "";
-            if (String.IsNullOrEmpty(UsernameField.Text))
-                errors += "Please fill the Username!\n";
-            if (String.IsNullOrEmpty(PasswordField.Password))
-                errors += "Please fill the Password!\n";
+            if (String.IsNullOrEmpty(EmailBox.Text))
+                errors += "Please fill the Email address!\n";
+            else if (!IsValidEmail(EmailBox.Text))
+                errors += "Please give valid email address!\n";
 
             if (errors != "")
             {
@@ -122,51 +135,16 @@ namespace XEurope
             }
             else
             {
-                Uri myUri = new Uri(ConnHelper.BaseUri + "login");
-
-                // Create the Json
-                var loginData = new LoginJson(userMail, userPass);
-
-                // Create the post data
-                var postData = JsonConvert.SerializeObject(loginData);
-                var response = await ConnHelper.PostToUri(myUri, postData);
-                try
-                {
-
-                    var responseData = (LoginOkJson)JsonConvert.DeserializeObject(response, typeof(LoginOkJson));
-
-                    var title = responseData.error
-                        ? "Error"
-                        : "Success";
-                    var dialog = new MessageDialog(responseData.message, title);
-
-                    if (!responseData.error)
-                    {
-                        (this.Parent as Frame).Navigate(typeof (View.CameraPage));
-                    }
-                    else
-                    {
-                        dialog.ShowAsync();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var dialog = new MessageDialog(ex.Message, "Error");
-                    dialog.ShowAsync();
-                }
-                /*
-
+                Uri myUri = new Uri(ConnHelper.BaseUri + "forgotPassword");
                 HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(myUri);
-                
                 myRequest.ContentType = "application/json";
                 // Needed: Vote, voteCountByCode, Users
                 //myRequest.Headers["Authorization"] = "a065bde13113778966eacdeff21a5ead";
                 myRequest.Method = "POST";
                 myRequest.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), myRequest);
-                  * */
             }
         }
-        /*
+        
         void GetRequestStreamCallback(IAsyncResult callbackResult)
         {
             HttpWebRequest myRequest = (HttpWebRequest)callbackResult.AsyncState;
@@ -177,10 +155,10 @@ namespace XEurope
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 // Create the Json
-                var loginData = new LoginJson(UsernameField.Text, PasswordField.Password);
+                var registerData = new RegisterJson(userMail, userPass, userName);
 
                 // Create the post data
-                var postData = JsonConvert.SerializeObject(loginData);
+                var postData = JsonConvert.SerializeObject(registerData);
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
 
                 // Add the post data to the web request
@@ -199,66 +177,54 @@ namespace XEurope
             {
                 HttpWebRequest request = (HttpWebRequest)callbackResult.AsyncState;
                 HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(callbackResult);
-
+                
                 var stream = new StreamReader(response.GetResponseStream());
                 var responseString = stream.ReadToEnd();
 
                 JsonClasses.ErrorJson responseData = (JsonClasses.ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(JsonClasses.ErrorJson));
 
-                var title = responseData.error
-                    ? "Error"
+                var title = responseData.error 
+                    ? "Error" 
                     : "Success";
                 var dialog = new MessageDialog(responseData.message, title);
-                
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    if (!responseData.error)
-                    {
-                        // Check if it's the first launch
-                        if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch"))
-                        {
-                            ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
-
-                            (this.Parent as Frame).Navigate(typeof(View.TutorialPage));
-                        }
-                        else
-                        {
-                            (this.Parent as Frame).Navigate(typeof(MainPage));
-                        }
-                    }
-                    else
-                    {
-                        dialog.ShowAsync();
-                    }     
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
+                    dialog.ShowAsync();
                 });
+                
             }
             catch (Exception e)
             {
                 var dialog = new MessageDialog(e.Message, "Error");
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    dialog.ShowAsync();
-                });
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
+                   dialog.ShowAsync();
+               });
             }
         }
-         * */
         #endregion
 
-        #region Link eventhandlers
-        private void ShowRegistrationPage(object sender, RoutedEventArgs e)
+        private void CancelReset(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(RegisterPage)); 
+            this.navigationHelper.GoBack();
         }
 
-        private void ShowAboutPage(object sender, RoutedEventArgs e)
+        public bool IsValidEmail(string strIn)
         {
-            (this.Parent as Frame).Navigate(typeof(AboutPage)); 
-        }
+            /*
+                Be warned that this will fail if:
+                - There is a subdomain after the @ symbol.
+                - You use a TLD with a length greater than 3, such as .info
+            */
 
-        private void ResetPassword(object sender, RoutedEventArgs e)
-        {
-            (this.Parent as Frame).Navigate(typeof(ResetPasswordPage));
+            if (String.IsNullOrEmpty(strIn))
+                return false;
+
+            string email = strIn;
+            Regex regex = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*"
+                                    + "@"
+                                    + @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
+            Match match = regex.Match(email);
+
+            return match.Success;
         }
-        #endregion
     }
 }

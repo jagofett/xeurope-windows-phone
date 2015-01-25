@@ -89,19 +89,8 @@ namespace XEurope
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
-                // Check if it's the first launch
-                if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch"))
-                {
-                    ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
-
-                    if (!rootFrame.Navigate(typeof(View.TutorialPage), e.Arguments))
-                        throw new Exception("Failed to create initial page");
-                }
-                else
-                { 
-                    if (!rootFrame.Navigate(typeof(MainPage), e.Arguments))
-                        throw new Exception("Failed to create initial page");
-                }
+                if (!rootFrame.Navigate(typeof(MainPage), e.Arguments))
+                    throw new Exception("Failed to create initial page");
             }
 
             // Ensure the current window is active

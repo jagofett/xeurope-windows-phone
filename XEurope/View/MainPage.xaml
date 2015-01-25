@@ -12,18 +12,18 @@
         <ScrollViewer>
             <StackPanel ScrollViewer.VerticalScrollMode="Enabled"               
                         ScrollViewer.VerticalScrollBarVisibility="Visible"
-                HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top">
+                HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top">
                 <Image Source="../Assets/login-top.png" 
                        Margin="0,0,0,20"/>
                 <TextBox TextWrapping="Wrap" VerticalAlignment="Stretch"
                      BorderBrush="#3f3f3e"
                      PlaceholderText="Email address"
                      Margin="30,0,30,10"
-                         TextChanged="UserMailChangedEvent"/>
+                     x:Name="UsernameField"/>
                 <PasswordBox VerticalAlignment="Stretch"
                      BorderBrush="#3f3f3e" Margin="30,0,30,10" 
                      PlaceholderText="Password"
-                     PasswordChanged="UserPassChangedEvent" />
+                     x:Name="PasswordField" />
                 <Button Content="Login" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                     Height="80" Margin="30,0"
                     FontSize="34" BorderThickness="0"
