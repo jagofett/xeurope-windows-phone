@@ -18,6 +18,7 @@ using XEurope.Common;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 using XEurope.JsonClasses;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace XEurope.View
 {
@@ -30,6 +31,8 @@ namespace XEurope.View
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private CodeJson UserDTouchCode;
         private UserJson _userJson;
+
+        private DataTransferManager _dataTransferManager;
 
         public DetailPage()
         {
@@ -104,6 +107,10 @@ namespace XEurope.View
         {
             this.navigationHelper.OnNavigatedTo(e);
 
+            // Register the current page as a share source.
+            _dataTransferManager = DataTransferManager.GetForCurrentView();
+            _dataTransferManager.DataRequested += OnDataRequested;
+
             UserDTouchCode = e.Parameter as CodeJson;
             if (UserDTouchCode == null)
             {
@@ -129,8 +136,6 @@ namespace XEurope.View
             } 
             else
             {
-                //BitmapImage tn = new BitmapImage();
-                //tn.SetSource(Application.GetResourceStream(new Uri(@"../Assets/no-image.png", UriKind.Relative)).Stream);
                 LogoImage.Source = new BitmapImage(new Uri(@"ms-appx:///../Assets/no_image.png"));
             }
             //name
@@ -140,10 +145,26 @@ namespace XEurope.View
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
+            // Unregister the current page as a share source.
+            _dataTransferManager.DataRequested -= OnDataRequested;
+
             this.navigationHelper.OnNavigatedFrom(e);
         }
-
         #endregion
+
+        protected void OnDataRequested(DataTransferManager sender, DataRequestedEventArgs e)
+        {
+            e.Request.Data.Properties.Title = "X-Europe project";
+            e.Request.Data.Properties.Description = "Check out the X-Europe Project by EIT"; // Optional 
+
+            var link = ConnHelper.AddHttpToUrl(_userJson.link);
+            var url = Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute) ? link : "http://xeurope.eitictlabs.hu/";
+
+            var defUri = new Uri("http://xeurope.eitictlabs.hu/");
+            var uri = new Uri(url);
+
+            e.Request.Data.SetUri(uri);
+        }
 
         #region EventHandlers
         private void VoteClick(object sender, RoutedEventArgs e)
@@ -153,7 +174,7 @@ namespace XEurope.View
 
         private void ShareClick(object sender, RoutedEventArgs e)
         {
-
+            DataTransferManager.ShowShareUI();
         }
 
         private async void ReadMoreClick(object sender, RoutedEventArgs e)
