@@ -16,7 +16,6 @@
     </Page.BottomAppBar>
 
     <Grid x:Name="LayoutRoot" Background="White">
-
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
@@ -27,7 +26,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Title Panel -->
         <ScrollViewer>
             <StackPanel ScrollViewer.VerticalScrollMode="Enabled"
                         ScrollViewer.VerticalScrollBarVisibility="Visible"

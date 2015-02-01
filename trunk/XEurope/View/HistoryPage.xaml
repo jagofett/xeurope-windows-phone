@@ -1,0 +1,72 @@
+﻿<Page
+    x:Class="XEurope.View.HistoryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:XEurope.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.BottomAppBar>
+        <CommandBar Background="#97bf0d">
+            <AppBarButton Icon="Back" Label="Camera" Click="BackButton_Click"/>
+            <AppBarButton Icon="Cancel" Label="Logout" Click="LogoutButton_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer>
+            <StackPanel ScrollViewer.VerticalScrollMode="Enabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Visible"
+                        Grid.Row="0" Margin="19,0,19,0"
+                        Name="HistoryStack">
+                <TextBlock Text="History" 
+                       Foreground="#3f3f3e" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+                <TextBlock Text="Previous scans"  FontSize="46"
+                       Foreground="#009ee0"  FontWeight="Bold"
+                       Margin="0,-6.5,0,5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+                <Rectangle Height="2" Fill="#009ee0"
+                     Margin="0,0,0,26.5"/>
+                <!-- Bind the list box to the observable collection. -->
+                <ListBox x:Name="scansListBox" SelectionChanged="scansListBox_SelectionChanged"
+                     Grid.Row="0" HorizontalContentAlignment="Stretch" Margin="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="245" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <Image Source="{Binding ImageName}"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0" >
+                                    <TextBlock Text="{Binding TeamName}"
+                                               FontWeight="Bold" FontSize="16"
+                                               HorizontalAlignment="Center"/>
+                                    <Rectangle Height="3" Fill="#009ee0"
+                                               Margin="0,5" HorizontalAlignment="Stretch" />
+                                    <TextBlock Text="{Binding Voted}" FontSize="16"
+                                               HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

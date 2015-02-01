@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
+using SQLite;
+using XEurope.Common;
+using System.Threading.Tasks;
 
 namespace XEurope
 {
@@ -26,6 +18,14 @@ namespace XEurope
     /// </summary>
     public sealed partial class App : Application
     {
+        public static string DB_NAME = "XEuropeDb.sqlite";
+
+        /// <summary>
+        /// Provides easy access to the root frame of the Phone Application.
+        /// </summary>
+        /// <returns>The root frame of the Phone Application.</returns>
+        public static string DB_PATH = Path.Combine(Path.Combine(ApplicationData.Current.LocalFolder.Path, DB_NAME));
+
         private TransitionCollection transitions;
 
         /// <summary>
@@ -36,6 +36,21 @@ namespace XEurope
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
+            try
+            {
+                if (!FileExists(DB_NAME).Result)
+                {
+                    using (var db = new SQLiteConnection(DB_PATH))
+                    {
+                        db.CreateTable<Scans>();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
         }
 
         /// <summary>
@@ -122,6 +137,19 @@ namespace XEurope
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        private async Task<bool> FileExists(string fileName)
+        {
+            try
+            {
+                var store = await Windows.Storage.ApplicationData.Current.LocalFolder.GetFileAsync(fileName);
+                return true;
+            }
+            catch
+            {
+            }
+            return false;
         }
     }
 }

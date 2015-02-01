@@ -62,20 +62,6 @@ namespace XEurope.View
         }
 
         /// <summary>
-        /// Event for capturing photo
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void BtnCapturePhoto_Click(object sender, RoutedEventArgs e)
-        {
-            // Take snapshot and add to ListView
-            // Disable button to prevent exception due to parallel capture usage
-            BtnCapturePhoto.IsEnabled = false;
-            //var photoStorageFile = await _mediaCapture.CapturePhoto();
-            BtnCapturePhoto.IsEnabled = true;
-        }
-
-        /// <summary>
         /// Gets the view model for this <see cref="Page"/>.
         /// This can be changed to a strongly typed view model.
         /// </summary>
@@ -280,11 +266,9 @@ namespace XEurope.View
                 {
                     dialog.ShowAsync();
                 }
+
                 if (isMarkerDetected)
-                {
-                    //dialog.ShowAsync();
                     (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = MarkerString });
-                }
             }
             catch (Exception ex)
             {
@@ -292,6 +276,11 @@ namespace XEurope.View
                 dialog.ShowAsync();
             }
 
+        }
+
+        private async void HistoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            (this.Parent as Frame).Navigate(typeof(HistoryPage));
         }
 
         private async void TorchButton_Click(object sender, RoutedEventArgs e)
@@ -353,11 +342,9 @@ namespace XEurope.View
             return responseData;
         }
 
-        #region OpenCv dependent functions from android implementation
         private void setMarkerDetected(bool detected)
         {
             isMarkerDetected = detected;
         }
-        #endregion
     }
 }
