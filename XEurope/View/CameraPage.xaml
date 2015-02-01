@@ -42,10 +42,9 @@
         			HorizontalAlignment="Center" VerticalAlignment="Center"
         			IsIndeterminate="True" Visibility="Collapsed" Margin="0"/>
                 <Image x:Name="HistoryButton" Stretch="Uniform"
-        			Tapped="CaptureButton_Click"
+        			Tapped="HistoryButton_Click"
                     HorizontalAlignment="Right"
         			Source="../Assets/history-normal.png" Margin="10,5,10,5" />
-
             </Grid>
         </Border>
     </Grid>

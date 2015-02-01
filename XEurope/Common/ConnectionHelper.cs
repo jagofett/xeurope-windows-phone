@@ -57,7 +57,6 @@ namespace XEurope.Common
 
                 using (var requestStream = await Task<Stream>.Factory.FromAsync(request.BeginGetRequestStream, request.EndGetRequestStream, request))
                 {
-
                     await requestStream.WriteAsync(data, 0, data.Length);
                 }
 
@@ -106,6 +105,5 @@ namespace XEurope.Common
             }
             return received;
         }
-
     }
 }

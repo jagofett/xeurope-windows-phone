@@ -1,25 +1,36 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using Windows.ApplicationModel.Core;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
 using Windows.Storage;
-using Windows.UI.Core;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using XEurope.Common;
 using XEurope.JsonClasses;
-using XEurope.View;
 
-namespace XEurope
+// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
+
+namespace XEurope.View
 {
-    public sealed partial class MainPage : Page
+    /// <summary>
+    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// </summary>
+    public sealed partial class HistoryPage : Page
     {
+        ObservableCollection<Scans> DB_ScanList = new ObservableCollection<Scans>();
+
         NavigationHelper navigationHelper;
 
-        public MainPage()
+        public HistoryPage()
         {
             this.InitializeComponent();
 
@@ -28,6 +39,24 @@ namespace XEurope
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            this.Loaded += ReadScansList_Loaded;
+        }
+
+        private void ReadScansList_Loaded(object sender, RoutedEventArgs e)
+        {
+            ReadAllContactsList dbscans = new ReadAllContactsList();
+            DB_ScanList = dbscans.GetAllContacts();//Get all DB contacts
+            scansListBox.ItemsSource = DB_ScanList.OrderByDescending(i => i.Id).ToList();//Latest contact ID can Display first
+        }
+
+        private void scansListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (scansListBox.SelectedIndex != -1)
+            {
+                Scans listitem = scansListBox.SelectedItem as Scans;//Get slected listbox item contact ID
+                (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = listitem.Code });
+            }
         }
 
         /// <summary>
@@ -89,88 +118,16 @@ namespace XEurope
         {
             this.navigationHelper.OnNavigatedFrom(e);
         }
-
         #endregion
 
-        #region Login
-        private async void Login(object sender, RoutedEventArgs e)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            string errors = "";
-            if (String.IsNullOrEmpty(UsernameField.Text))
-                errors += "Please fill the Username!\n";
-            if (String.IsNullOrEmpty(PasswordField.Password))
-                errors += "Please fill the Password!\n";
-
-            if (errors != "")
-            {
-                MessageDialog errorDialog = new MessageDialog(errors, "Error");
-                await errorDialog.ShowAsync();
-            }
-            else
-            {
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    // Create the Json
-                    var loginData = new LoginJson(UsernameField.Text, PasswordField.Password);
-
-                    // Create the post data
-                    var postData = JsonConvert.SerializeObject(loginData);
-
-                    Uri myUri = new Uri(ConnHelper.BaseUri + "login");
-                    var response = await ConnHelper.PostToUri(myUri, postData);
-
-                    try
-                    {
-                        var responseData = (LoginOkJson)JsonConvert.DeserializeObject(response, typeof(LoginOkJson));
-
-                        var title = responseData.error
-                            ? "Error"
-                            : "Success";
-                        var dialog = new MessageDialog(responseData.message, title);
-
-                        if (!responseData.error)
-                        {
-                            // Check if it's the first launch
-                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch"))
-                            {
-                                ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
-                                (this.Parent as Frame).Navigate(typeof(View.TutorialPage));
-                            }
-                            else
-                            {
-                                (this.Parent as Frame).Navigate(typeof(CameraPage));
-                            }
-                        }
-                        else
-                        {
-                            dialog.ShowAsync();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        var dialog = new MessageDialog(ex.Message, "Error");
-                        dialog.ShowAsync();
-                    }
-                });
-            }
-        }
-        #endregion
-
-        #region Link eventhandlers
-        private void ShowRegistrationPage(object sender, RoutedEventArgs e)
-        {
-            (this.Parent as Frame).Navigate(typeof(RegisterPage)); 
+            navigationHelper.GoBack();
         }
 
-        private void ShowAboutPage(object sender, RoutedEventArgs e)
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(AboutPage)); 
+            (this.Parent as Frame).Navigate(typeof(MainPage));
         }
-
-        private void ResetPassword(object sender, RoutedEventArgs e)
-        {
-            (this.Parent as Frame).Navigate(typeof(ResetPasswordPage));
-        }
-        #endregion
     }
 }

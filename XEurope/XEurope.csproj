@@ -93,12 +93,16 @@
     </Compile>
     <Compile Include="CameraCapture.cs" />
     <Compile Include="Common\ConnectionHelper.cs" />
+    <Compile Include="Common\DatabaseHelperClass.cs" />
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="Common\ReadAllScansList.cs" />
     <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Common\Scans.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="JsonClasses\CodeJson.cs" />
+    <Compile Include="JsonClasses\CommentsJson.cs" />
     <Compile Include="JsonClasses\ErrorJson.cs" />
     <Compile Include="JsonClasses\JsonImage.cs" />
     <Compile Include="JsonClasses\LoginJson.cs" />
@@ -106,7 +110,10 @@
     <Compile Include="JsonClasses\RegisterJson.cs" />
     <Compile Include="JsonClasses\UserJson.cs" />
     <Compile Include="JsonClasses\VoteCountByCodeJson.cs" />
+    <Compile Include="JsonClasses\VoteWithCommentJson.cs" />
     <Compile Include="JsonClasses\VoteJson.cs" />
+    <Compile Include="SQLite.cs" />
+    <Compile Include="SQLiteAsync.cs" />
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
@@ -115,6 +122,9 @@
     </Compile>
     <Compile Include="View\DetailPage.xaml.cs">
       <DependentUpon>DetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\HistoryPage.xaml.cs">
+      <DependentUpon>HistoryPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ResetPasswordPage.xaml.cs">
       <DependentUpon>ResetPasswordPage.xaml</DependentUpon>
@@ -181,6 +191,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\HistoryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ResetPasswordPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -202,9 +216,13 @@
     <SDKReference Include="Microsoft.VCLibs, Version=12.0">
       <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
     </SDKReference>
+    <SDKReference Include="SQLite.WP81, Version=3.8.8.1">
+      <Name>SQLite for Windows Phone 8.1</Name>
+    </SDKReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="XEuropeDb.sqlite" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

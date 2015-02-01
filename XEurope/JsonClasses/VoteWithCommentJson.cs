@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace XEurope.JsonClasses
 {
-    public class VoteJson
+    public class VoteWithCommentJson : VoteJson
     {
-        public string vote;
+        public string message;
 
-        public VoteJson() { }
+        public VoteWithCommentJson() { }
 
-        public VoteJson(string code) : base ()
+        public VoteWithCommentJson(string code, string m)
         {
             vote = code;
+            message = m;
         }
     }
 }

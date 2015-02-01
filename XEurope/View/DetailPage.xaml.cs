@@ -19,6 +19,11 @@ using XEurope.Common;
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 using XEurope.JsonClasses;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.Storage;
+using Windows.UI.Text;
 
 namespace XEurope.View
 {
@@ -33,6 +38,7 @@ namespace XEurope.View
         private UserJson _userJson;
 
         private DataTransferManager _dataTransferManager;
+        DatabaseHelperClass Db_Helper = new DatabaseHelperClass();
 
         public DetailPage()
         {
@@ -113,20 +119,18 @@ namespace XEurope.View
 
             UserDTouchCode = e.Parameter as CodeJson;
             if (UserDTouchCode == null)
-            {
                 return;
-            }
+
             var uri = new Uri(ConnHelper.BaseUri + "users/" + UserDTouchCode.code);
             var resp = await ConnHelper.GetFromUri(uri);
             _userJson = (UserJson)JsonConvert.DeserializeObject(resp, typeof(UserJson));
             if (_userJson.error)
-            {
                 return;
-            }
-            //description
+
+            // Description
             DetailText.Text = _userJson.description ?? "No description!";
 
-            //logo
+            // Logo
             var link = ConnHelper.AddHttpToUrl(_userJson.image_url);
             if (Uri.IsWellFormedUriString(link, UriKind.RelativeOrAbsolute))
             {
@@ -138,9 +142,64 @@ namespace XEurope.View
             {
                 LogoImage.Source = new BitmapImage(new Uri(@"ms-appx:///../Assets/no_image.png"));
             }
-            //name
+
+            // Name
             ProjectNameText.Text = _userJson.name ?? "Anonymus Project";
 
+            // Save to database
+            try
+            {
+                var scan = Db_Helper.ReadScan(_userJson.code);
+                if (scan == null)
+                {
+                    Db_Helper.Insert(new Scans(_userJson.name, _userJson.image_url, _userJson.code, "Not voted"));
+                }           
+                else
+                {
+                    if (scan.Voted == "Voted!")
+                        VoteButton.Content = "VOTED!";
+                    else
+                        VoteButton.Content = "VOTE";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+
+            // Comments
+            uri = new Uri(ConnHelper.BaseUri + "messages/" + UserDTouchCode.code);
+            resp = await ConnHelper.GetFromUri(uri);
+            var _commentsJson = (CommentsJson)JsonConvert.DeserializeObject(resp, typeof(CommentsJson));
+            if (_commentsJson.error)
+                return;
+
+            foreach (var m in _commentsJson.messages)
+            {
+                var titleBlock = new TextBlock()
+                {
+                    Text = m.voterName + ":",
+                    FontSize = 20,
+                    FontWeight = FontWeights.Bold,
+                    TextAlignment = TextAlignment.Left,
+                    FontStyle = Windows.UI.Text.FontStyle.Italic,
+                    Margin = new Thickness(19,10,19,0),
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 63, 63, 62))
+                };
+                PageStackPanel.Children.Add(titleBlock);
+
+                var commentBlock = new TextBlock()
+                {
+                    Text = m.message,
+                    FontSize = 16,
+                    TextAlignment = TextAlignment.Justify,
+                    TextWrapping = Windows.UI.Xaml.TextWrapping.Wrap,
+                    Height = double.NaN,
+                    Margin = new Thickness(19,0,19,0),
+                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255,63,63,62))
+                };
+                PageStackPanel.Children.Add(commentBlock);
+            }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -169,7 +228,51 @@ namespace XEurope.View
         #region EventHandlers
         private void VoteClick(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                Db_Helper.UpdateScan(new Scans(_userJson.name, _userJson.image_url, _userJson.code, "Voted!"));
+            }
+            catch { }
 
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                // Create the Json
+                var voteData = string.IsNullOrEmpty(CommentField.Text)
+                    ? new VoteJson(UserDTouchCode.code)
+                    : new VoteWithCommentJson(UserDTouchCode.code, CommentField.Text);
+
+                // Create the post data
+                var postData = JsonConvert.SerializeObject(voteData);
+
+                Uri myUri = new Uri(ConnHelper.BaseUri + "vote");
+                var response = await ConnHelper.PostToUri(myUri, postData);
+
+                try
+                {
+                    var responseData = (LoginOkJson)JsonConvert.DeserializeObject(response, typeof(LoginOkJson));
+
+                    var title = responseData.error
+                        ? "Error"
+                        : "Success";
+                    var dialog = new MessageDialog(responseData.message, title);
+
+                    if (!responseData.error)
+                    {
+                        await dialog.ShowAsync();
+                        navigationHelper.GoBack();
+                    }
+                    else
+                    {
+                        VoteButton.Content = "VOTED!";
+                        dialog.ShowAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var dialog = new MessageDialog(ex.Message, "Error");
+                    dialog.ShowAsync();
+                }
+            });
         }
 
         private void ShareClick(object sender, RoutedEventArgs e)
