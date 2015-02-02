@@ -26,13 +26,13 @@ namespace XEurope.View
         {
             this.InitializeComponent();
 
-            TutorialText.Text = "1. Look for an X-Europe roject poster in your local university\n" +
+            TutorialText.Text = "1. Look for an X-Europe project poster in your local university\n" +
             "2. Press on start button\n" +
             "3. Point your device over a logo\n" +
             "4. Press Analyze to start scanning\n" +
             "5. Read about the projects\n" +
             "6. Vote on what you like\n\n" +
-            "Note: The application needs internet access for scanning";
+            "Note: The application needs internet access for scanning and voting!";
         }
 
         /// <summary>
