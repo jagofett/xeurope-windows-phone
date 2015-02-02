@@ -164,12 +164,12 @@ namespace XEurope
 
         private void ShowAboutPage(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(AboutPage)); 
+            (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = "1:1:1:24" }); 
         }
 
         private void ResetPassword(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(ResetPasswordPage));
+            (this.Parent as Frame).Navigate(typeof(CameraPage));
         }
         #endregion
     }

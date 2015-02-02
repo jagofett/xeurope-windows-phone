@@ -28,7 +28,7 @@ namespace XEurope.Common
             if (!(inUrl.StartsWith("http://") || inUrl.StartsWith("https://")))
             {
                 return "http://" + inUrl;
-            }
+            }   
             return inUrl;
         }
 
@@ -64,14 +64,25 @@ namespace XEurope.Common
                 try
                 {
                     responseObject = await Task<WebResponse>.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, request);
+                    var responseStream = responseObject.GetResponseStream();
+                    var sr = new StreamReader(responseStream);
+                    received = await sr.ReadToEndAsync();
+                }
+                catch (WebException ex)
+                {
+                    using (var stream = ex.Response.GetResponseStream())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        //var sr = reader.ReadToEnd();
+                        received = reader.ReadToEnd();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.Message);
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    received = JsonConvert.SerializeObject(new ErrorJson { error = true, message = ex.Message });
                 }
-                var responseStream = responseObject.GetResponseStream();
-                var sr = new StreamReader(responseStream);
-                received = await sr.ReadToEndAsync();
+
             }
             catch (Exception ex)
             {

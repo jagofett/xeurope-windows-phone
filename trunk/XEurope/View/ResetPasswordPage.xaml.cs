@@ -135,69 +135,37 @@ namespace XEurope.View
             }
             else
             {
-                Uri myUri = new Uri(ConnHelper.BaseUri + "forgotPassword");
-                HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(myUri);
-                myRequest.ContentType = "application/json";
-                // Needed: Vote, voteCountByCode, Users
-                //myRequest.Headers["Authorization"] = "a065bde13113778966eacdeff21a5ead";
-                myRequest.Method = "POST";
-                myRequest.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), myRequest);
-            }
-        }
-        
-        void GetRequestStreamCallback(IAsyncResult callbackResult)
-        {
-            HttpWebRequest myRequest = (HttpWebRequest)callbackResult.AsyncState;
+                var myUri = new Uri(ConnHelper.BaseUri + "forgotPassword");
 
-            // End the stream request operation
-            Stream postStream = myRequest.EndGetRequestStream(callbackResult);
-
-            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                // Create the Json
-                var registerData = new RegisterJson(userMail, userPass, userName);
+                var registerData = new RegisterJson(EmailBox.Text, String.Empty, String.Empty);
 
                 // Create the post data
                 var postData = JsonConvert.SerializeObject(registerData);
-                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+                var resp = await ConnHelper.PostToUri(myUri, postData);
 
-                // Add the post data to the web request
-                postStream.Write(byteArray, 0, byteArray.Length);
-                postStream.Flush();
-                postStream.Dispose();
 
-                // Start the web request
-                myRequest.BeginGetResponse(new AsyncCallback(GetResponsetStreamCallback), myRequest);
-            });
-        }
+                try
+                {
+                    var responseData = (ErrorJson) JsonConvert.DeserializeObject(resp, typeof (ErrorJson));
 
-        void GetResponsetStreamCallback(IAsyncResult callbackResult)
-        {
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)callbackResult.AsyncState;
-                HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(callbackResult);
-                
-                var stream = new StreamReader(response.GetResponseStream());
-                var responseString = stream.ReadToEnd();
+                    var title = responseData.error
+                        ? "Error"
+                        : "Success";
+                    var dialog = new MessageDialog(responseData.message, title);
 
-                JsonClasses.ErrorJson responseData = (JsonClasses.ErrorJson)JsonConvert.DeserializeObject(responseString, typeof(JsonClasses.ErrorJson));
-
-                var title = responseData.error 
-                    ? "Error" 
-                    : "Success";
-                var dialog = new MessageDialog(responseData.message, title);
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
                     dialog.ShowAsync();
-                });
-                
-            }
-            catch (Exception e)
-            {
-                var dialog = new MessageDialog(e.Message, "Error");
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
-                   dialog.ShowAsync();
-               });
+                    if (!responseData.error)
+                    {
+                        navigationHelper.GoBack();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    var dialog = new MessageDialog(ex.Message, "Error");
+
+                    dialog.ShowAsync();
+                }
             }
         }
         #endregion

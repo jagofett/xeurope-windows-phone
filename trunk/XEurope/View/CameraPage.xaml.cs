@@ -264,7 +264,7 @@ namespace XEurope.View
                 }
                 else
                 {
-                    dialog.ShowAsync();
+                    await dialog.ShowAsync();
                 }
 
                 if (isMarkerDetected)
@@ -337,7 +337,7 @@ namespace XEurope.View
                 //the dtouch code does not belong to anyone or not exsist.
                 //todo additional message
                 responseData.error = true;
-                responseData.message = "The code don't belong to anyone!";
+                responseData.message = validData.message;
             }
             return responseData;
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -119,14 +120,22 @@ namespace XEurope.View
 
             UserDTouchCode = e.Parameter as CodeJson;
             if (UserDTouchCode == null)
+            {
+                //no code is provided, go back from previous page
+                //todo message needed?
+                this.navigationHelper.GoBack();
                 return;
-
+            }
             var uri = new Uri(ConnHelper.BaseUri + "users/" + UserDTouchCode.code);
             var resp = await ConnHelper.GetFromUri(uri);
             _userJson = (UserJson)JsonConvert.DeserializeObject(resp, typeof(UserJson));
             if (_userJson.error)
-                return;
-
+            {
+                //failed to get user data, show error, and navigate back?
+                var dialog = new MessageDialog(_userJson.message, "Error!");
+                await dialog.ShowAsync();
+                this.navigationHelper.GoBack();
+            }
             // Description
             DetailText.Text = _userJson.description ?? "No description!";
 
@@ -226,7 +235,7 @@ namespace XEurope.View
         }
 
         #region EventHandlers
-        private void VoteClick(object sender, RoutedEventArgs e)
+        private async void VoteClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -234,12 +243,9 @@ namespace XEurope.View
             }
             catch { }
 
-            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
+
                 // Create the Json
-                var voteData = string.IsNullOrEmpty(CommentField.Text)
-                    ? new VoteJson(UserDTouchCode.code)
-                    : new VoteWithCommentJson(UserDTouchCode.code, CommentField.Text);
+                var voteData = new VoteWithCommentJson(UserDTouchCode.code, CommentField.Text);
 
                 // Create the post data
                 var postData = JsonConvert.SerializeObject(voteData);
@@ -249,22 +255,22 @@ namespace XEurope.View
 
                 try
                 {
-                    var responseData = (LoginOkJson)JsonConvert.DeserializeObject(response, typeof(LoginOkJson));
+                    var responseData = (ErrorJson)JsonConvert.DeserializeObject(response, typeof(ErrorJson));
 
                     var title = responseData.error
                         ? "Error"
                         : "Success";
                     var dialog = new MessageDialog(responseData.message, title);
 
-                    if (!responseData.error)
+                    if (responseData.error)
                     {
                         await dialog.ShowAsync();
-                        navigationHelper.GoBack();
+                        //navigationHelper.GoBack();
                     }
                     else
                     {
                         VoteButton.Content = "VOTED!";
-                        dialog.ShowAsync();
+                        await dialog.ShowAsync();
                     }
                 }
                 catch (Exception ex)
@@ -272,7 +278,7 @@ namespace XEurope.View
                     var dialog = new MessageDialog(ex.Message, "Error");
                     dialog.ShowAsync();
                 }
-            });
+
         }
 
         private void ShareClick(object sender, RoutedEventArgs e)
