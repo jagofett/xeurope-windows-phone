@@ -134,6 +134,12 @@ namespace XEurope
                             if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch"))
                             {
                                 ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
+                                
+                                if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("ApiKey"))
+                                    ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("ApiKey", responseData.apiKey));
+                                else
+                                    ApplicationData.Current.LocalSettings.Values["ApiKey"] = responseData.apiKey;
+
                                 (this.Parent as Frame).Navigate(typeof(View.TutorialPage));
                             }
                             else
@@ -164,7 +170,7 @@ namespace XEurope
 
         private void ShowAboutPage(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = "1:1:1:24" }); 
+            (this.Parent as Frame).Navigate(typeof(AboutPage)); 
         }
 
         private void ResetPassword(object sender, RoutedEventArgs e)

@@ -37,6 +37,7 @@ namespace XEurope.View
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private CodeJson UserDTouchCode;
         private UserJson _userJson;
+        private string logoSource;
 
         private DataTransferManager _dataTransferManager;
         DatabaseHelperClass Db_Helper = new DatabaseHelperClass();
@@ -126,7 +127,7 @@ namespace XEurope.View
                 this.navigationHelper.GoBack();
                 return;
             }
-            var uri = new Uri(ConnHelper.BaseUri + "users/" + UserDTouchCode.code);
+            var uri = new Uri(ConnHelper.BaseUri + "users2/" + UserDTouchCode.code);
             var resp = await ConnHelper.GetFromUri(uri);
             _userJson = (UserJson)JsonConvert.DeserializeObject(resp, typeof(UserJson));
             if (_userJson.error)
@@ -146,10 +147,12 @@ namespace XEurope.View
                 var myUri = new Uri(link, UriKind.RelativeOrAbsolute);
                 var bmi = new BitmapImage { CreateOptions = BitmapCreateOptions.IgnoreImageCache, UriSource = myUri };
                 LogoImage.Source = bmi;
+                logoSource = _userJson.image_url;
             } 
             else
             {
                 LogoImage.Source = new BitmapImage(new Uri(@"ms-appx:///../Assets/no_image.png"));
+                logoSource = "../Assets/no_image.png";
             }
 
             // Name
@@ -161,14 +164,23 @@ namespace XEurope.View
                 var scan = Db_Helper.ReadScan(_userJson.code);
                 if (scan == null)
                 {
-                    Db_Helper.Insert(new Scans(_userJson.name, _userJson.image_url, _userJson.code, "Not voted"));
+                    if (_userJson.isVoted) {
+                        Db_Helper.Insert(new Scans(_userJson.name, logoSource, _userJson.code, "Voted!"));
+                        VoteButton.Content = "VOTED!";
+                    }
+                    else {
+                        Db_Helper.Insert(new Scans(_userJson.name, logoSource, _userJson.code, "Not voted"));
+                    }
                 }           
                 else
                 {
-                    if (scan.Voted == "Voted!")
+                    if (scan.Voted == "Voted!") {
                         VoteButton.Content = "VOTED!";
-                    else
+                    }
+                    else {
                         VoteButton.Content = "VOTE";
+                    }
+                        
                 }
             }
             catch (Exception ex)
@@ -185,29 +197,31 @@ namespace XEurope.View
 
             foreach (var m in _commentsJson.messages)
             {
-                var titleBlock = new TextBlock()
+                if (!string.IsNullOrEmpty(m.message))
                 {
-                    Text = m.voterName + ":",
-                    FontSize = 20,
-                    FontWeight = FontWeights.Bold,
-                    TextAlignment = TextAlignment.Left,
-                    FontStyle = Windows.UI.Text.FontStyle.Italic,
-                    Margin = new Thickness(19,10,19,0),
-                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 63, 63, 62))
-                };
-                PageStackPanel.Children.Add(titleBlock);
-
-                var commentBlock = new TextBlock()
-                {
-                    Text = m.message,
-                    FontSize = 16,
-                    TextAlignment = TextAlignment.Justify,
-                    TextWrapping = Windows.UI.Xaml.TextWrapping.Wrap,
-                    Height = double.NaN,
-                    Margin = new Thickness(19,0,19,0),
-                    Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255,63,63,62))
-                };
-                PageStackPanel.Children.Add(commentBlock);
+                    var titleBlock = new TextBlock()
+                    {
+                        Text = m.voterName + ":",
+                        FontSize = 20,
+                        FontWeight = FontWeights.Bold,
+                        TextAlignment = TextAlignment.Left,
+                        FontStyle = Windows.UI.Text.FontStyle.Italic,
+                        Margin = new Thickness(19, 10, 19, 0),
+                        Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 63, 63, 62))
+                    };
+                    var commentBlock = new TextBlock()
+                    {
+                        Text = m.message,
+                        FontSize = 16,
+                        TextAlignment = TextAlignment.Justify,
+                        TextWrapping = Windows.UI.Xaml.TextWrapping.Wrap,
+                        Height = double.NaN,
+                        Margin = new Thickness(19, 0, 19, 0),
+                        Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 63, 63, 62))
+                    };
+                    PageStackPanel.Children.Add(titleBlock);
+                    PageStackPanel.Children.Add(commentBlock);
+                }
             }
         }
 
@@ -239,46 +253,46 @@ namespace XEurope.View
         {
             try
             {
-                Db_Helper.UpdateScan(new Scans(_userJson.name, _userJson.image_url, _userJson.code, "Voted!"));
+                Db_Helper.UpdateScan(new Scans(_userJson.name, logoSource, _userJson.code, "Voted!"));
             }
             catch { }
 
+            // Create the Json
+            var voteData = new VoteWithCommentJson(UserDTouchCode.code, CommentField.Text);
 
-                // Create the Json
-                var voteData = new VoteWithCommentJson(UserDTouchCode.code, CommentField.Text);
+            // Create the post data
+            var postData = JsonConvert.SerializeObject(voteData);
 
-                // Create the post data
-                var postData = JsonConvert.SerializeObject(voteData);
+            Uri myUri = new Uri(ConnHelper.BaseUri + "vote");
+            var response = await ConnHelper.PostToUri(myUri, postData);
 
-                Uri myUri = new Uri(ConnHelper.BaseUri + "vote");
-                var response = await ConnHelper.PostToUri(myUri, postData);
+            try
+            {
+                var responseData = (ErrorJson)JsonConvert.DeserializeObject(response, typeof(ErrorJson));
 
-                try
+                var title = responseData.error
+                    ? "Error"
+                    : "Success";
+                var dialog = new MessageDialog(responseData.message, title);
+
+                if (responseData.error)
                 {
-                    var responseData = (ErrorJson)JsonConvert.DeserializeObject(response, typeof(ErrorJson));
-
-                    var title = responseData.error
-                        ? "Error"
-                        : "Success";
-                    var dialog = new MessageDialog(responseData.message, title);
-
-                    if (responseData.error)
-                    {
-                        await dialog.ShowAsync();
-                        //navigationHelper.GoBack();
-                    }
-                    else
-                    {
-                        VoteButton.Content = "VOTED!";
-                        await dialog.ShowAsync();
-                    }
+                    await dialog.ShowAsync();
+                    //navigationHelper.GoBack();
                 }
-                catch (Exception ex)
+                else
                 {
-                    var dialog = new MessageDialog(ex.Message, "Error");
-                    dialog.ShowAsync();
+                    VoteButton.Content = "VOTED!";
+                    VoteButton.IsEnabled = false;
+                    VoteButton.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(255,151,191,13));
+                    await dialog.ShowAsync();
                 }
-
+            }
+            catch (Exception ex)
+            {
+                var dialog = new MessageDialog(ex.Message, "Error");
+                dialog.ShowAsync();
+            }
         }
 
         private void ShareClick(object sender, RoutedEventArgs e)
