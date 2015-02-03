@@ -17,7 +17,7 @@ namespace XEurope.JsonClasses
         public string image_url { get; set; }
         public string link { get; set; }
         public string description { get; set; }
-
-
+        public bool isVoted { get; set; }
+        public string message { get; set; }
     }
 }

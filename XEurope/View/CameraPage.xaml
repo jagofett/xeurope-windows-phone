@@ -34,10 +34,14 @@
                        HorizontalAlignment="Left"
         			Source="../Assets/lamp-normal.png" Margin="10,5,10,5" />
                 <Button 
-        			Background="#97bf0d"
-        			Content="Analyze" Height="60"
+        			Background="Transparent"
+                    Foreground="#3f3f3e"
+        			Content="Tap here to analyze" 
+                    Height="60" Width="200"
+                    Margin="0"
         			x:Name="BtnCapturePhoto"
-        			HorizontalAlignment="Center" Click="CaptureButton_Click" Margin="145,10,146,10" />
+        			HorizontalAlignment="Center" Click="CaptureButton_Click">
+                </Button>
                 <ProgressBar x:Name="AnalyzeProgressBar" Width="Auto"
         			HorizontalAlignment="Center" VerticalAlignment="Center"
         			IsIndeterminate="True" Visibility="Collapsed" Margin="0"/>

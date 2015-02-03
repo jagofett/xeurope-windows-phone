@@ -127,6 +127,9 @@ namespace XEurope.View
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
+            ApplicationData.Current.LocalSettings.Values["FirstLaunch"] = false;
+            ApplicationData.Current.LocalSettings.Values["ApiKey"] = "";
+
             (this.Parent as Frame).Navigate(typeof(MainPage));
         }
     }

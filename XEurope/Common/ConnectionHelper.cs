@@ -11,6 +11,7 @@ using System.Net;
 using Windows.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using XEurope.JsonClasses;
+using Windows.Storage;
 
 namespace XEurope.Common
 {
@@ -41,7 +42,16 @@ namespace XEurope.Common
 
         public static async Task<string> PostToUri(Uri uri, string postdata, string authHeader = null)
         {
-            authHeader = authHeader ?? "c7dda4ed33ff8f5220ebb597cd823c01";
+            // "c7dda4ed33ff8f5220ebb597cd823c01"
+            string apiKey;
+            try {
+                apiKey = ApplicationData.Current.LocalSettings.Values["ApiKey"].ToString();
+            }
+            catch {
+                apiKey = null;
+            }
+            
+            authHeader = authHeader ?? apiKey;
             var received = String.Empty;
             try
             {
@@ -51,7 +61,9 @@ namespace XEurope.Common
                 {
                     request.Headers["Authorization"] = authHeader;
                 }
+
                 byte[] data = Encoding.UTF8.GetBytes(postdata);
+                
                 //request.ContentLength = data.Length;
                 request.ContentType = "application/json";
 
@@ -95,7 +107,15 @@ namespace XEurope.Common
 
         public static async Task<string> GetFromUri(Uri url, string authHeader = null)
         {
-            authHeader = authHeader ?? "c7dda4ed33ff8f5220ebb597cd823c01";
+            string apiKey;
+            try {
+                apiKey = ApplicationData.Current.LocalSettings.Values["ApiKey"].ToString();
+            }
+            catch {
+                apiKey = null;
+            }
+
+            authHeader = authHeader ?? apiKey;
             var received = String.Empty;
             try
             {

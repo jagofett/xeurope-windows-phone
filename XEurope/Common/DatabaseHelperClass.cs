@@ -84,6 +84,7 @@ namespace XEurope.Common
                     existingScan.TeamName = scan.TeamName;
                     existingScan.ImageName = scan.ImageName;
                     existingScan.Code = scan.Code;
+                    existingScan.Voted = scan.Voted;
 
                     dbConn.RunInTransaction(() =>
                     {
