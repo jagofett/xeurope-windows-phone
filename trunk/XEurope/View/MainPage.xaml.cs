@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI.Core;
@@ -130,16 +129,23 @@ namespace XEurope
 
                         if (!responseData.error)
                         {
+                            // Set the current user mail address
+                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("CurrentUserMail"))
+                                ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("CurrentUserMail", loginData.email));
+                            else
+                                ApplicationData.Current.LocalSettings.Values["CurrentUserMail"] = loginData.email;
+
+                            // Set the api key
+                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("ApiKey"))
+                                ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("ApiKey", responseData.apiKey));
+                            else
+                                ApplicationData.Current.LocalSettings.Values["ApiKey"] = responseData.apiKey;
+
                             // Check if it's the first launch
-                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch"))
+                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch") ||
+                                ((bool)ApplicationData.Current.LocalSettings.Values["FirstLaunch"] == true))
                             {
                                 ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
-                                
-                                if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("ApiKey"))
-                                    ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("ApiKey", responseData.apiKey));
-                                else
-                                    ApplicationData.Current.LocalSettings.Values["ApiKey"] = responseData.apiKey;
-
                                 (this.Parent as Frame).Navigate(typeof(View.TutorialPage));
                             }
                             else

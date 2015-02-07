@@ -1,36 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+﻿using Newtonsoft.Json;
+using System;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Popups;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using Newtonsoft.Json;
 using XEurope.Common;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 using XEurope.JsonClasses;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
-using Windows.UI.Popups;
-using Windows.Storage;
-using Windows.UI.Text;
 
 namespace XEurope.View
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class DetailPage : Page
     {
         private NavigationHelper navigationHelper;
@@ -174,13 +156,10 @@ namespace XEurope.View
                 }           
                 else
                 {
-                    if (scan.Voted == "Voted!") {
+                    if (scan.Voted == "Voted!")
                         VoteButton.Content = "VOTED!";
-                    }
-                    else {
+                    else
                         VoteButton.Content = "VOTE";
-                    }
-                        
                 }
             }
             catch (Exception ex)
@@ -251,8 +230,7 @@ namespace XEurope.View
         #region EventHandlers
         private async void VoteClick(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            try {
                 Db_Helper.UpdateScan(new Scans(_userJson.name, logoSource, _userJson.code, "Voted!"));
             }
             catch { }
@@ -278,7 +256,6 @@ namespace XEurope.View
                 if (responseData.error)
                 {
                     await dialog.ShowAsync();
-                    //navigationHelper.GoBack();
                 }
                 else
                 {
@@ -314,7 +291,8 @@ namespace XEurope.View
             var success = await Windows.System.Launcher.LaunchUriAsync(uri, options);
             if (!success)
             {
-                //todo can not open the link(?)
+                var dialog = new MessageDialog("Couldn't open browser", "Error");
+                dialog.ShowAsync();
             }
         }
         #endregion

@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Text.RegularExpressions;
+using Windows.ApplicationModel.Core;
+using Windows.Storage;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,12 +12,12 @@ using XEurope.JsonClasses;
 
 namespace XEurope.View
 {
-    public sealed partial class ResetPasswordPage : Page
+    public sealed partial class PasswordChangePage : Page
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        public ResetPasswordPage()
+        public PasswordChangePage()
         {
             this.InitializeComponent();
 
@@ -95,74 +97,60 @@ namespace XEurope.View
         #endregion
 
         #region Register
-        private async void ResetPassword(object sender, RoutedEventArgs e)
+        private async void ChangePassword(object sender, RoutedEventArgs e)
         {
             string errors = "";
-            if (String.IsNullOrEmpty(EmailBox.Text))
-                errors += "Please fill the Email address!\n";
-            else if (!IsValidEmail(EmailBox.Text))
-                errors += "Please give valid email address!\n";
+            if (String.IsNullOrEmpty(OldPasswordField.Password))
+                errors += "Please fill the Old password!\n";
+            if (String.IsNullOrEmpty(NewPasswordField1.Password))
+                errors += "Please fill the new password!\n";
+            if (NewPasswordField1.Password != NewPasswordField2.Password)
+                errors += "New passwords don't match!";
 
             if (errors != "")
             {
-                MessageDialog errorDialog = new MessageDialog(errors, "Error");
+                var errorDialog = new MessageDialog(errors, "Error");
                 await errorDialog.ShowAsync();
             }
             else
             {
-                var myUri = new Uri(ConnHelper.BaseUri + "forgotPassword");
-                var registerData = new RegisterJson(EmailBox.Text, String.Empty, String.Empty);
+                var myUri = new Uri(ConnHelper.BaseUri + "newPassword");
 
-                // Create the post data
-                var postData = JsonConvert.SerializeObject(registerData);
-                var resp = await ConnHelper.PostToUri(myUri, postData);
-
-                try
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    var responseData = (ErrorJson) JsonConvert.DeserializeObject(resp, typeof (ErrorJson));
+                    // Create the Json
+                    var passwordChangeData = new NewPasswordJson(ApplicationData.Current.LocalSettings.Values["CurrentUserMail"].ToString(),
+                        OldPasswordField.Password, NewPasswordField1.Password);
 
-                    var title = responseData.error
-                        ? "Error"
-                        : "Success";
-                    var dialog = new MessageDialog(responseData.message, title);
+                    // Create the post data
+                    var postData = JsonConvert.SerializeObject(passwordChangeData);
 
-                    dialog.ShowAsync();
+                    var resp = await ConnHelper.PostToUri(myUri, postData);
 
-                    if (!responseData.error)
-                        navigationHelper.GoBack();
-                }
-                catch (Exception ex)
-                {
-                    var dialog = new MessageDialog(ex.Message, "Error");
-                    dialog.ShowAsync();
-                }
+                    try
+                    {
+                        var responseData = (ErrorJson)JsonConvert.DeserializeObject(resp, typeof(ErrorJson));
+                        var title = responseData.error
+                            ? "Error"
+                            : "Success";
+                        var dialog = new MessageDialog(responseData.message, title);
+
+                        dialog.ShowAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        var dialog = new MessageDialog(ex.Message, "Error");
+                        dialog.ShowAsync();
+                    }
+                });
             }
         }
+
         #endregion
 
-        private void CancelReset(object sender, RoutedEventArgs e)
+        private void CancelChange(object sender, RoutedEventArgs e)
         {
             this.navigationHelper.GoBack();
-        }
-
-        public bool IsValidEmail(string strIn)
-        {
-            /*
-                Be warned that this will fail if:
-                - There is a subdomain after the @ symbol.
-                - You use a TLD with a length greater than 3, such as .info
-            */
-
-            if (String.IsNullOrEmpty(strIn))
-                return false;
-
-            string email = strIn;
-            Regex regex = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*"
-                                    + "@"
-                                    + @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
-            Match match = regex.Match(email);
-
-            return match.Success;
         }
     }
 }
