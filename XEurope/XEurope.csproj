@@ -107,6 +107,7 @@
     <Compile Include="JsonClasses\JsonImage.cs" />
     <Compile Include="JsonClasses\LoginJson.cs" />
     <Compile Include="JsonClasses\LoginOkJson.cs" />
+    <Compile Include="JsonClasses\NewPasswordJson.cs" />
     <Compile Include="JsonClasses\RegisterJson.cs" />
     <Compile Include="JsonClasses\UserJson.cs" />
     <Compile Include="JsonClasses\VoteCountByCodeJson.cs" />
@@ -125,6 +126,9 @@
     </Compile>
     <Compile Include="View\HistoryPage.xaml.cs">
       <DependentUpon>HistoryPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PasswordChangePage.xaml.cs">
+      <DependentUpon>PasswordChangePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ResetPasswordPage.xaml.cs">
       <DependentUpon>ResetPasswordPage.xaml</DependentUpon>
@@ -192,6 +196,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\HistoryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PasswordChangePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

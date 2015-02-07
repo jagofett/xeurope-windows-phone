@@ -8,9 +8,7 @@
     mc:Ignorable="d">
     <Page.BottomAppBar>
         <CommandBar Background="#009ee0">
-            <AppBarButton Icon="Accept" Label="Register" 
-                          Click="RegisterUser"/>
-            <AppBarButton Icon="Cancel" Label="Cancel"
+            <AppBarButton Icon="Back" Label="Back"
                           Click="CancelRegister"/>
         </CommandBar>
     </Page.BottomAppBar>
@@ -50,9 +48,13 @@
                      PlaceholderText="Password"
                      x:Name="Password1Field"/>
                 <PasswordBox VerticalAlignment="Stretch"
-                     BorderBrush="#3f3f3e" Margin="30,0,30,10" 
+                     BorderBrush="#3f3f3e" Margin="30,0,30,15" 
                      PlaceholderText="Retype password"
                      x:Name="Password2Field"/>
+                <Button Content="Submit" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    Height="80" Margin="30,0"
+                    FontSize="34" BorderThickness="0"
+                    Background="#97bf0d" Click="RegisterUser"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

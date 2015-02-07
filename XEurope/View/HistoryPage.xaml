@@ -10,6 +10,7 @@
     <Page.BottomAppBar>
         <CommandBar Background="#009ee0">
             <AppBarButton Icon="Back" Label="Camera" Click="BackButton_Click"/>
+            <AppBarButton Icon="Switch" Label="Password" Click="LogoutButton_Click"/>
             <AppBarButton Icon="Cancel" Label="Logout" Click="LogoutButton_Click"/>
         </CommandBar>
     </Page.BottomAppBar>

@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.IO;
-using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;

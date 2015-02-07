@@ -1,34 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Devices.Enumeration;
-using Windows.Graphics.Display;
 using Windows.Media.Capture;
 using Windows.Media.Devices;
 using Windows.Media.MediaProperties;
-using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using Newtonsoft.Json;
 using XEurope.Common;
 using XEurope.JsonClasses;
-using Windows.UI;
-using Windows.UI.Xaml.Media;
-
 
 namespace XEurope.View
 {
@@ -53,8 +39,6 @@ namespace XEurope.View
         public CameraPage()
         {
             this.InitializeComponent();
-
-
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
@@ -275,7 +259,6 @@ namespace XEurope.View
                 var dialog = new MessageDialog(ex.Message, "Error");
                 dialog.ShowAsync();
             }
-
         }
 
         private async void HistoryButton_Click(object sender, RoutedEventArgs e)
@@ -310,12 +293,12 @@ namespace XEurope.View
             var base64 = Convert.ToBase64String(sendingBytes);
             base64 = base64 ?? "";
 
-#if (EMULATOR)
-{  
-    //get sample image byte[] from string.
-    sendingBytes = ConnHelper.GetSampleImageBytes();
-}
-#endif
+            #if (EMULATOR)
+            {  
+                //get sample image byte[] from string.
+                sendingBytes = ConnHelper.GetSampleImageBytes();
+            }
+            #endif
 
             var markerUri = new Uri(ConnHelper.DtouchProcessUri);
             var myUri = new Uri(ConnHelper.DtouchProcessUri);
@@ -334,7 +317,7 @@ namespace XEurope.View
             var validData = (ErrorJson)JsonConvert.DeserializeObject(validString, typeof(ErrorJson));
             if (validData.error)
             {
-                //the dtouch code does not belong to anyone or not exsist.
+                //the dtouch code does not belong to anyone or not exist.
                 //todo additional message
                 responseData.error = true;
                 responseData.message = validData.message;
