@@ -14,6 +14,7 @@ namespace XEurope.View
     {
         ObservableCollection<Scans> DB_ScanList = new ObservableCollection<Scans>();
         NavigationHelper navigationHelper;
+        DatabaseHelperClass Db_Helper = new DatabaseHelperClass();
 
         public HistoryPage()
         {
@@ -107,16 +108,21 @@ namespace XEurope.View
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            navigationHelper.GoBack();
+            (this.Parent as Frame).Navigate(typeof(CameraPage));
+
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            ApplicationData.Current.LocalSettings.Values["CurrentUserMail"] = "";
-            ApplicationData.Current.LocalSettings.Values["FirstLaunch"] = true;
-            ApplicationData.Current.LocalSettings.Values["ApiKey"] = "";
-
+            ConnHelper.Logout();
+            
             (this.Parent as Frame).Navigate(typeof(MainPage));
+        }
+
+        private void NewPasswButton_Click(object sender, RoutedEventArgs e)
+        {
+            (this.Parent as Frame).Navigate(typeof(PasswordChangePage));
+
         }
     }
 }

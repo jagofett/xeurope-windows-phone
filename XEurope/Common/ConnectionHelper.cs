@@ -22,6 +22,16 @@ namespace XEurope.Common
         /// </summary>
         public const String BaseUri = "http://xeurope.eitictlabs.hu/dtouch_service/v1/";
         public const String DtouchProcessUri = "http://www.dtouch.somee.com/api/dtouch/";
+        private static readonly DatabaseHelperClass Db_Helper = new DatabaseHelperClass();
+
+        public static void Logout()
+        {
+            ApplicationData.Current.LocalSettings.Values["CurrentUserMail"] = "";
+            ApplicationData.Current.LocalSettings.Values["FirstLaunch"] = true;
+            ApplicationData.Current.LocalSettings.Values["ApiKey"] = "";
+
+            Db_Helper.DeleteAllScan();
+        }
 
         public static string AddHttpToUrl(string inUrl)
         {

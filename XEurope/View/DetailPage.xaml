@@ -7,7 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Page.BottomAppBar>
+        <CommandBar Background="#009ee0">
+            <AppBarButton Icon="Camera" Label="Camera" Click="BackButton_Click"/>
+            <AppBarButton Icon="Clock" Label="History" Click="HistoryButton_Click"/>
+            <AppBarButton Icon="Switch" Label="Password" Click="NewPasswButton_Click"/>
+            <AppBarButton Icon="Cancel" Label="Logout" Click="LogoutButton_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
     <Grid Background="#e9e8e0">
         <ScrollViewer Height="640" VerticalAlignment="Top">
             <StackPanel Name="PageStackPanel" 
@@ -15,8 +22,7 @@
                 ScrollViewer.VerticalScrollBarVisibility="Visible" Height="1045">
                 <StackPanel Background="White">
                     <TextBlock Name="ProjectNameText" Text="Loading..." Foreground="#3f3f3e" Style="{ThemeResource TitleTextBlockStyle}" Margin="19,12,19,0"/>
-                    <Image Height="150" Margin="0,20" Name="LogoImage"
-                       Source="../Assets/Images/eit-logo-1080.png" />
+                    <Image Height="150" Margin="0,20" Name="LogoImage" />
                     <Rectangle Height="3" Fill="#009ee0" />
                 </StackPanel>
                 <TextBlock Text="ABOUT THE PROJECT"

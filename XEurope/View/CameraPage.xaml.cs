@@ -26,9 +26,13 @@ namespace XEurope.View
         //private MarkerDetector markerDetector;
         private String MarkerString = "";
         private bool isMarkerDetected = false;
+/*
         private Windows.Foundation.Rect markerPosition;
+*/
         private byte[] sendingBytes;
+/*
         private string _result;
+*/
 
         private MediaCapture mediaCapture;
         private NavigationHelper navigationHelper;
@@ -227,9 +231,10 @@ namespace XEurope.View
 
             await mediaCapture.CapturePhotoToStreamAsync(ImageEncodingProperties.CreateJpeg(), stream);
 
-            var responseData = await SendStreamToProcess(stream.CloneStream().AsStream());
             try
             {
+                var responseData = await SendStreamToProcess(stream.CloneStream().AsStream());
+
                 var title = responseData.error
                     ? "Failed"
                     : "Success";
@@ -252,7 +257,9 @@ namespace XEurope.View
                 }
 
                 if (isMarkerDetected)
+                {
                     (this.Parent as Frame).Navigate(typeof(DetailPage), new CodeJson { code = MarkerString });
+                }
             }
             catch (Exception ex)
             {
@@ -328,6 +335,19 @@ namespace XEurope.View
         private void setMarkerDetected(bool detected)
         {
             isMarkerDetected = detected;
+        }
+
+        private void NewPasswButton_Click(object sender, RoutedEventArgs e)
+        {
+            (this.Parent as Frame).Navigate(typeof(PasswordChangePage));
+
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            ConnHelper.Logout();
+
+            (this.Parent as Frame).Navigate(typeof(MainPage));
         }
     }
 }

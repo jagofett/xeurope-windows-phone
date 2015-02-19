@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using XEurope.Common;
@@ -89,5 +90,10 @@ namespace XEurope.View
         }
 
         #endregion
+
+        private void BackButton(object sender, RoutedEventArgs e)
+        {
+            this.navigationHelper.GoBack();
+        }
     }
 }
