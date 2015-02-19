@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Windows.Storage;
+using Newtonsoft.Json;
 using System;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Popups;
@@ -294,6 +295,31 @@ namespace XEurope.View
                 var dialog = new MessageDialog("Couldn't open browser", "Error");
                 dialog.ShowAsync();
             }
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            (this.Parent as Frame).Navigate(typeof(CameraPage));
+
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            ConnHelper.Logout();
+
+            (this.Parent as Frame).Navigate(typeof(MainPage));
+        }
+
+        private void NewPasswButton_Click(object sender, RoutedEventArgs e)
+        {
+            (this.Parent as Frame).Navigate(typeof(PasswordChangePage));
+
+        }
+
+        private void HistoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            (this.Parent as Frame).Navigate(typeof(HistoryPage));
+
         }
         #endregion
     }

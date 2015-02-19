@@ -129,23 +129,28 @@ namespace XEurope
 
                         if (!responseData.error)
                         {
+                            //reset the mail and password fields
+                            UsernameField.Text = String.Empty;
+                            PasswordField.Password = String.Empty;
+
                             // Set the current user mail address
-                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("CurrentUserMail"))
-                                ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("CurrentUserMail", loginData.email));
-                            else
-                                ApplicationData.Current.LocalSettings.Values["CurrentUserMail"] = loginData.email;
+                            //if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("CurrentUserMail"))
+                            //    ApplicationData.Current.LocalSettings.Values["CurrentUserMail"], loginData.email));
+                            //else
+                                
+                            ApplicationData.Current.LocalSettings.Values["CurrentUserMail"] = loginData.email;
 
                             // Set the api key
-                            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("ApiKey"))
-                                ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("ApiKey", responseData.apiKey));
-                            else
-                                ApplicationData.Current.LocalSettings.Values["ApiKey"] = responseData.apiKey;
+                            //if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("ApiKey"))
+                            //    ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("ApiKey", responseData.apiKey));
+                            //else
+                            ApplicationData.Current.LocalSettings.Values["ApiKey"] = responseData.apiKey;
 
                             // Check if it's the first launch
                             if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("FirstLaunch") ||
                                 ((bool)ApplicationData.Current.LocalSettings.Values["FirstLaunch"] == true))
                             {
-                                ApplicationData.Current.LocalSettings.Values.Add(new KeyValuePair<string, object>("FirstLaunch", false));
+                                ApplicationData.Current.LocalSettings.Values["FirstLaunch"] = false;
                                 (this.Parent as Frame).Navigate(typeof(View.TutorialPage));
                             }
                             else
@@ -181,7 +186,7 @@ namespace XEurope
 
         private void ResetPassword(object sender, RoutedEventArgs e)
         {
-            (this.Parent as Frame).Navigate(typeof(CameraPage));
+            (this.Parent as Frame).Navigate(typeof(ResetPasswordPage));
         }
         #endregion
     }

@@ -8,6 +8,12 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.BottomAppBar>
+        <CommandBar Background="#009ee0">
+            <AppBarButton Icon="Back" Label="Back"
+                          Click="BackButton"/>
+        </CommandBar>
+    </Page.BottomAppBar>
     <Grid x:Name="LayoutRoot" Background="White">
 
         <Grid.ChildrenTransitions>
@@ -33,13 +39,14 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="X-EUROPE PROJECT" 
+                        <TextBlock Text="Find
+                                   mEIT" 
             		Foreground="#009ee0"
                     VerticalAlignment="Center"
                     Height="Auto" Margin="0,10,0,0"
                     TextWrapping="Wrap"
             		FontSize="32" FontWeight="Bold" 
-            		CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            		CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" HorizontalAlignment="Center"/>
                         <Image Grid.Column="1" Source="../Assets/eit-logo-1080.png"
                        Height="140"/>
                     </Grid>
@@ -54,7 +61,7 @@
                 Foreground="#3f3f3e"
                 TextWrapping="Wrap"
                 TextAlignment="Justify" FontSize="16"
-                Text="EIT ICT Labs' X-Europe Outreach Programme is aiming at disseminating and promoting the EIT ICT Labs activities in European countries, which are not yet directly involved in EIT ICT Labs eco-system. Three areas - Student Opportunities, Start-up Activation, and Scouting, Mobility and Events - focus on involving European talents in activities carried out by the EIT ICT Labs network"
+                Text="Find mEIT is a mobile scanner software that recognizes topology based visual markers with a voting and feedback system. Read more about the dTouch marker technology at d-touch.org and how to create markers. This specific software was developed in collaboration with European Institute of Innovation and Technology (EIT) and ELTE-Soft. This is a test version, where markers lead to predefined links."
                 />
                 </Grid>
             </StackPanel>
